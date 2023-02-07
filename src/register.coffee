@@ -1,7 +1,7 @@
-CoffeeScript  = require './'
+CoffeeScript = require './'
 child_process = require 'child_process'
-helpers       = require './helpers'
-path          = require 'path'
+helpers = require './helpers'
+path = require 'path'
 
 {patchStackTrace} = CoffeeScript
 

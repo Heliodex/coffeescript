@@ -7,20 +7,20 @@
 # current directory's Cakefile.
 
 # External dependencies.
-fs           = require 'fs'
-path         = require 'path'
-helpers      = require './helpers'
-optparse     = require './optparse'
+fs = require 'fs'
+path = require 'path'
+helpers = require './helpers'
+optparse = require './optparse'
 CoffeeScript = require './'
 
 # Register .coffee extension
 CoffeeScript.register()
 
 # Keep track of the list of defined tasks, the accepted options, and so on.
-tasks     = {}
-options   = {}
-switches  = []
-oparse    = null
+tasks = {}
+options = {}
+switches = []
+oparse = null
 
 # Mixin the top-level Cake functions for Cakefiles to use directly.
 helpers.extend global,
@@ -67,7 +67,7 @@ printTasks = ->
 	for name, task of tasks
 		spaces = 20 - name.length
 		spaces = if spaces > 0 then Array(spaces + 1).join(' ') else ''
-		desc   = if task.description then "# #{task.description}" else ''
+		desc = if task.description then "# #{task.description}" else ''
 		console.log "cake #{name}#{spaces} #{desc}"
 	console.log oparse.help() if switches.length
 

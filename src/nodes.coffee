@@ -19,10 +19,10 @@ exports.extend = extend
 exports.addDataToNode = addDataToNode
 
 # Constant functions for nodes that don’t need customization.
-YES     = -> yes
-NO      = -> no
-THIS    = -> this
-NEGATE  = -> @negated = not @negated; this
+YES = -> yes
+NO = -> no
+THIS = -> this
+NEGATE = -> @negated = not @negated; this
 
 #### CodeFragment
 
@@ -96,9 +96,9 @@ exports.Base = class Base
 	# already been asked to return the result (because statements know how to
 	# return results).
 	compileToFragments: (o, lvl) ->
-		o        = extend {}, o
-		o.level  = lvl if lvl
-		node     = @unfoldSoak(o) or this
+		o = extend {}, o
+		o.level = lvl if lvl
+		node = @unfoldSoak(o) or this
 		node.tab = o.indent
 
 		fragments = if o.level is LEVEL_TOP or not node.isStatement(o)
@@ -133,10 +133,10 @@ exports.Base = class Base
 		switch
 			when func.isGenerator or func.base?.isGenerator
 				parts.unshift @makeCode "(yield* "
-				parts.push    @makeCode ")"
+				parts.push @makeCode ")"
 			when func.isAsync or func.base?.isAsync
 				parts.unshift @makeCode "(await "
-				parts.push    @makeCode ")"
+				parts.push @makeCode ")"
 		parts
 
 	compileCommentFragments: (o, node, fragments) ->
@@ -215,9 +215,9 @@ exports.Base = class Base
 	# call.
 	hoist: ->
 		@hoisted = yes
-		target   = new HoistTarget @
+		target = new HoistTarget @
 
-		compileNode        = @compileNode
+		compileNode = @compileNode
 		compileToFragments = @compileToFragments
 
 		@compileNode = (o) ->
@@ -498,7 +498,7 @@ exports.HoistTarget = class HoistTarget extends Base
 	# Copies the target indent and level, and returns the placeholder fragments
 	compileToFragments: (o, level) ->
 		@options.indent = o.indent
-		@options.level  = level ? o.level
+		@options.level = level ? o.level
 		[ @targetFragments ]
 
 	compileNode: (o) ->
@@ -522,8 +522,8 @@ exports.Root = class Root extends Base
 	# better not to generate them in the first place, but for now, clean up
 	# obvious double-parentheses.
 	compileNode: (o) ->
-		o.indent    = if o.bare then '' else TAB
-		o.level     = LEVEL_TOP
+		o.indent = if o.bare then '' else TAB
+		o.level = LEVEL_TOP
 		o.compiling = yes
 		@initializeScope o
 		fragments = @body.compileRoot o
@@ -638,8 +638,8 @@ exports.Block = class Block extends Base
 	# the result, and it’s an expression, simply return it. If it’s a statement,
 	# ask the statement to do so.
 	compileNode: (o) ->
-		@tab  = o.indent
-		top   = o.level is LEVEL_TOP
+		@tab = o.indent
+		top = o.level is LEVEL_TOP
 		compiledNodes = []
 
 		for node, index in @expressions
@@ -693,7 +693,7 @@ exports.Block = class Block extends Base
 		o = merge(o, level: LEVEL_TOP)
 		if i
 			rest = @expressions.splice i, 9e9
-			[spaced,    @spaced] = [@spaced, no]
+			[spaced, @spaced] = [@spaced, no]
 			[fragments, @spaced] = [@compileNode(o), spaced]
 			@expressions = rest
 		post = @compileNode o
@@ -1024,7 +1024,7 @@ exports.StringLiteral = class StringLiteral extends Literal
 					indentRegex = /// \n#{@indent} ///g if @indent
 
 					val = val.replace indentRegex, '\n' if indentRegex
-					val = val.replace LEADING_BLANK_LINE,  '' if @initialChunk
+					val = val.replace LEADING_BLANK_LINE, '' if @initialChunk
 					val = val.replace TRAILING_BLANK_LINE, '' if @finalChunk
 					val
 				else
@@ -1069,7 +1069,7 @@ exports.StringLiteral = class StringLiteral extends Literal
 	withoutQuotesInLocationData: ->
 		endsWithNewline = @originalValue[-1..] is '\n'
 		locationData = Object.assign {}, @locationData
-		locationData.first_column          += @quote.length
+		locationData.first_column += @quote.length
 		if endsWithNewline
 			locationData.last_line -= 1
 			locationData.last_column =
@@ -1078,7 +1078,7 @@ exports.StringLiteral = class StringLiteral extends Literal
 				else
 					@originalValue[...-1].length - '\n'.length - @originalValue[...-1].lastIndexOf('\n')
 		else
-			locationData.last_column         -= @quote.length
+			locationData.last_column -= @quote.length
 		locationData.last_column_exclusive -= @quote.length
 		locationData.range = [
 			locationData.range[0] + @quote.length
@@ -1208,7 +1208,7 @@ exports.StatementLiteral = class StatementLiteral extends Literal
 	astType: ->
 		switch @value
 			when 'continue' then 'ContinueStatement'
-			when 'break'    then 'BreakStatement'
+			when 'break' then 'BreakStatement'
 			when 'debugger' then 'DebuggerStatement'
 
 exports.ThisLiteral = class ThisLiteral extends Literal
@@ -1270,9 +1270,9 @@ exports.Return = class Return extends Base
 
 	children: ['expression']
 
-	isStatement:     YES
-	makeReturn:      THIS
-	jumps:           THIS
+	isStatement: YES
+	makeReturn: THIS
+	jumps: THIS
 
 	compileToFragments: (o, level) ->
 		expr = @expression?.makeReturn()
@@ -1354,10 +1354,10 @@ exports.Value = class Value extends Base
 	constructor: (base, props, tag, isDefaultValue = no) ->
 		super()
 		return base if not props and base instanceof Value
-		@base           = base
-		@properties     = props or []
-		@tag            = tag
-		@[tag]          = yes if tag
+		@base = base
+		@properties = props or []
+		@tag = tag
+		@[tag] = yes if tag
 		@isDefaultValue = isDefaultValue
 		# If this is a `@foo =` assignment, if there are comments on `@` move them
 		# to be on `foo`.
@@ -1379,29 +1379,29 @@ exports.Value = class Value extends Base
 		not @properties.length and @base instanceof type
 
 	# Some boolean checks for the benefit of other nodes.
-	isArray        : -> @bareLiteral(Arr)
-	isRange        : -> @bareLiteral(Range)
-	shouldCache    : -> @hasProperties() or @base.shouldCache()
-	isAssignable   : (opts) -> @hasProperties() or @base.isAssignable opts
-	isNumber       : -> @bareLiteral(NumberLiteral)
-	isString       : -> @bareLiteral(StringLiteral)
-	isRegex        : -> @bareLiteral(RegexLiteral)
-	isUndefined    : -> @bareLiteral(UndefinedLiteral)
-	isNull         : -> @bareLiteral(NullLiteral)
-	isBoolean      : -> @bareLiteral(BooleanLiteral)
-	isAtomic       : ->
+	isArray : -> @bareLiteral(Arr)
+	isRange : -> @bareLiteral(Range)
+	shouldCache : -> @hasProperties() or @base.shouldCache()
+	isAssignable : (opts) -> @hasProperties() or @base.isAssignable opts
+	isNumber : -> @bareLiteral(NumberLiteral)
+	isString : -> @bareLiteral(StringLiteral)
+	isRegex : -> @bareLiteral(RegexLiteral)
+	isUndefined : -> @bareLiteral(UndefinedLiteral)
+	isNull : -> @bareLiteral(NullLiteral)
+	isBoolean : -> @bareLiteral(BooleanLiteral)
+	isAtomic : ->
 		for node in @properties.concat @base
 			return no if node.soak or node instanceof Call or node instanceof Op and node.operator is 'do'
 		yes
 
-	isNotCallable  : -> @isNumber() or @isString() or @isRegex() or
+	isNotCallable : -> @isNumber() or @isString() or @isRegex() or
 											@isArray() or @isRange() or @isSplice() or @isObject() or
 											@isUndefined() or @isNull() or @isBoolean()
 
-	isStatement : (o)    -> not @properties.length and @base.isStatement o
-	isJSXTag    : -> @base instanceof JSXTag
-	assigns     : (name) -> not @properties.length and @base.assigns name
-	jumps       : (o)    -> not @properties.length and @base.jumps o
+	isStatement : (o) -> not @properties.length and @base.isStatement o
+	isJSXTag : -> @base instanceof JSXTag
+	assigns : (name) -> not @properties.length and @base.assigns name
+	jumps : (o) -> not @properties.length and @base.jumps o
 
 	isObject: (onlyGenerated) ->
 		return no if @properties.length
@@ -1432,13 +1432,13 @@ exports.Value = class Value extends Base
 	cacheReference: (o) ->
 		[..., name] = @properties
 		if @properties.length < 2 and not @base.shouldCache() and not name?.shouldCache()
-			return [this, this]  # `a` `a.b`
+			return [this, this] # `a` `a.b`
 		base = new Value @base, @properties[...-1]
-		if base.shouldCache()  # `a().b`
+		if base.shouldCache() # `a().b`
 			bref = new IdentifierLiteral o.scope.freeVariable 'base'
 			base = new Value new Parens new Assign bref, base
-		return [base, bref] unless name  # `a()`
-		if name.shouldCache()  # `a[b()]`
+		return [base, bref] unless name # `a()`
+		if name.shouldCache() # `a[b()]`
 			nref = new IdentifierLiteral o.scope.freeVariable 'name'
 			name = new Index new Assign nref, name.index
 			nref = new Index nref
@@ -1792,7 +1792,7 @@ exports.JSXNamespacedName = class JSXNamespacedName extends Base
 		super()
 		[namespace, name] = tag.value.split ':'
 		@namespace = new JSXIdentifier(namespace).withLocationDataFrom locationData: extractSameLineLocationDataFirst(namespace.length) tag.locationData
-		@name      = new JSXIdentifier(name     ).withLocationDataFrom locationData: extractSameLineLocationDataLast(name.length      ) tag.locationData
+		@name = new JSXIdentifier(name ).withLocationDataFrom locationData: extractSameLineLocationDataLast(name.length ) tag.locationData
 		@locationData = tag.locationData
 
 	children: ['namespace', 'name']
@@ -2131,7 +2131,7 @@ exports.SuperCall = class SuperCall extends Call
 	compileNode: (o) ->
 		return super o unless @expressions?.length
 
-		superCall   = new Literal fragmentsToText super o
+		superCall = new Literal fragmentsToText super o
 		replacement = new Block @expressions.slice()
 
 		if o.level > LEVEL_TOP
@@ -2319,10 +2319,10 @@ exports.Range = class Range extends Base
 		o = merge o, top: true
 		shouldCache = del o, 'shouldCache'
 		[@fromC, @fromVar] = @cacheToCodeFragments @from.cache o, LEVEL_LIST, shouldCache
-		[@toC, @toVar]     = @cacheToCodeFragments @to.cache o, LEVEL_LIST, shouldCache
-		[@step, @stepVar]  = @cacheToCodeFragments step.cache o, LEVEL_LIST, shouldCache if step = del o, 'step'
+		[@toC, @toVar] = @cacheToCodeFragments @to.cache o, LEVEL_LIST, shouldCache
+		[@step, @stepVar] = @cacheToCodeFragments step.cache o, LEVEL_LIST, shouldCache if step = del o, 'step'
 		@fromNum = if @from.isNumber() then parseNumber @fromVar else null
-		@toNum   = if @to.isNumber()   then parseNumber @toVar   else null
+		@toNum = if @to.isNumber() then parseNumber @toVar else null
 		@stepNum = if step?.isNumber() then parseNumber @stepVar else null
 
 	# When compiled normally, the range returns the contents of the *for loop*
@@ -2332,11 +2332,11 @@ exports.Range = class Range extends Base
 		return @compileArray(o) unless o.index
 
 		# Set up endpoints.
-		known    = @fromNum? and @toNum?
-		idx      = del o, 'index'
-		idxName  = del o, 'name'
+		known = @fromNum? and @toNum?
+		idx = del o, 'index'
+		idxName = del o, 'name'
 		namedIndex = idxName and idxName isnt idx
-		varPart  =
+		varPart =
 			if known and not namedIndex
 				"var #{idx} = #{@fromC}"
 			else
@@ -2380,7 +2380,7 @@ exports.Range = class Range extends Base
 			else
 				"#{cond} ? #{idx}++ : #{idx}--"
 
-		varPart  = "#{idxName} = #{varPart}" if namedIndex
+		varPart = "#{idxName} = #{varPart}" if namedIndex
 		stepPart = "#{idxName} = #{stepPart}" if namedIndex
 
 		# The final loop body.
@@ -2394,20 +2394,20 @@ exports.Range = class Range extends Base
 			range = [@fromNum..@toNum]
 			range.pop() if @exclusive
 			return [@makeCode "[#{ range.join(', ') }]"]
-		idt    = @tab + TAB
-		i      = o.scope.freeVariable 'i', single: true, reserve: no
+		idt = @tab + TAB
+		i = o.scope.freeVariable 'i', single: true, reserve: no
 		result = o.scope.freeVariable 'results', reserve: no
-		pre    = "\n#{idt}var #{result} = [];"
+		pre = "\n#{idt}var #{result} = [];"
 		if known
 			o.index = i
-			body    = fragmentsToText @compileNode o
+			body = fragmentsToText @compileNode o
 		else
-			vars    = "#{i} = #{@fromC}" + if @toC isnt @toVar then ", #{@toC}" else ''
-			cond    = "#{@fromVar} <= #{@toVar}"
-			body    = "var #{vars}; #{cond} ? #{i} <#{@equals} #{@toVar} : #{i} >#{@equals} #{@toVar}; #{cond} ? #{i}++ : #{i}--"
-		post   = "{ #{result}.push(#{i}); }\n#{idt}return #{result};\n#{o.indent}"
+			vars = "#{i} = #{@fromC}" + if @toC isnt @toVar then ", #{@toC}" else ''
+			cond = "#{@fromVar} <= #{@toVar}"
+			body = "var #{vars}; #{cond} ? #{i} <#{@equals} #{@toVar} : #{i} >#{@equals} #{@toVar}; #{cond} ? #{i}++ : #{i}--"
+		post = "{ #{result}.push(#{i}); }\n#{idt}return #{result};\n#{o.indent}"
 		hasArgs = (node) -> node?.contains isLiteralArguments
-		args   = ', arguments' if hasArgs(@from) or hasArgs(@to)
+		args = ', arguments' if hasArgs(@from) or hasArgs(@to)
 		[@makeCode "(function() {#{pre}\n#{idt}for (#{body})#{post}}).apply(this#{args ? ''})"]
 
 	astProperties: (o) ->
@@ -2441,7 +2441,7 @@ exports.Slice = class Slice extends Base
 			to = new Value new Parens to
 		fromCompiled = from?.compileToFragments(o, LEVEL_PAREN) or [@makeCode '0']
 		if to
-			compiled     = to.compileToFragments o, LEVEL_PAREN
+			compiled = to.compileToFragments o, LEVEL_PAREN
 			compiledText = fragmentsToText compiled
 			if not (not @range.exclusive and +compiledText is -1)
 				toStr = ', ' + if @range.exclusive
@@ -2503,7 +2503,7 @@ exports.Obj = class Obj extends Base
 			for node in props when node instanceof Value
 				node.error 'cannot have an implicit value in an implicit object'
 
-		idt      = o.indent += TAB
+		idt = o.indent += TAB
 		lastNode = @lastNode @properties
 
 		# If this object is the left-hand side of an assignment, all its children
@@ -2537,18 +2537,18 @@ exports.Obj = class Obj extends Base
 				prop
 			if key instanceof Value and key.hasProperties()
 				key.error 'invalid object key' if prop.context is 'object' or not key.this
-				key  = key.properties[0].name
+				key = key.properties[0].name
 				prop = new Assign key, prop, 'object'
 			if key is prop
 				if prop.shouldCache()
 					[key, value] = prop.base.cache o
-					key  = new PropertyName key.value if key instanceof IdentifierLiteral
+					key = new PropertyName key.value if key instanceof IdentifierLiteral
 					prop = new Assign key, value, 'object'
 				else if key instanceof Value and key.base instanceof ComputedPropertyName
 					# `{ [foo()] }` output as `{ [ref = foo()]: ref }`.
 					if prop.base.value.shouldCache()
 						[key, value] = prop.base.value.cache o
-						key  = new ComputedPropertyName key.value if key instanceof IdentifierLiteral
+						key = new ComputedPropertyName key.value if key instanceof IdentifierLiteral
 						prop = new Assign key, value, 'object'
 					else
 						# `{ [expression] }` output as `{ [expression]: expression }`.
@@ -2800,11 +2800,11 @@ exports.Class = class Class extends Base
 			@hasGeneratedBody = yes
 
 	compileNode: (o) ->
-		@name          = @determineName()
+		@name = @determineName()
 		executableBody = @walkBody o
 
 		# Special handling to allow `class expr.A extends A` declarations
-		parentName    = @parent.base.value if @parent instanceof Value and not @parent.hasProperties()
+		parentName = @parent.base.value if @parent instanceof Value and not @parent.hasProperties()
 		@hasNameClash = @name? and @name is parentName
 
 		node = @
@@ -2870,20 +2870,20 @@ exports.Class = class Class extends Base
 		if name in JS_FORBIDDEN then "_#{name}" else name
 
 	walkBody: (o) ->
-		@ctor          = null
-		@boundMethods  = []
+		@ctor = null
+		@boundMethods = []
 		executableBody = null
 
-		initializer     = []
+		initializer = []
 		{ expressions } = @body
 
 		i = 0
 		for expression in expressions.slice()
 			if expression instanceof Value and expression.isObject true
 				{ properties } = expression.base
-				exprs     = []
-				end       = 0
-				start     = 0
+				exprs = []
+				end = 0
+				start = 0
 				pushSlice = -> exprs.push new Value new Obj properties[start...end], true if end > start
 
 				while assign = properties[end]
@@ -2959,7 +2959,7 @@ exports.Class = class Class extends Base
 		if method.isStatic
 			method.name = variable.properties[0]
 		else
-			methodName  = variable.base
+			methodName = variable.base
 			method.name = new (if methodName.shouldCache() then Index else Access) methodName
 			method.name.updateLocationDataIfMissing methodName.locationData
 			isConstructor =
@@ -3071,17 +3071,17 @@ exports.ExecutableClassBody = class ExecutableClassBody extends Base
 		if argumentsNode = @body.contains isLiteralArguments
 			argumentsNode.error "Class bodies shouldn't reference arguments"
 
-		params  = []
-		args    = [new ThisLiteral]
+		params = []
+		args = [new ThisLiteral]
 		wrapper = new Code params, @body
-		klass   = new Parens new Call (new Value wrapper, [new Access new PropertyName 'call']), args
+		klass = new Parens new Call (new Value wrapper, [new Access new PropertyName 'call']), args
 
 		@body.spaced = true
 
 		o.classScope = wrapper.makeScope o.scope
 
-		@name      = @class.name ? o.classScope.freeVariable @defaultClassVariableName
-		ident      = new IdentifierLiteral @name
+		@name = @class.name ? o.classScope.freeVariable @defaultClassVariableName
+		ident = new IdentifierLiteral @name
 		directives = @walkBody()
 		@setContext()
 
@@ -3110,7 +3110,7 @@ exports.ExecutableClassBody = class ExecutableClassBody extends Base
 	# - Hoist static assignments into `@properties`
 	# - Convert invalid ES properties into class or prototype assignments
 	walkBody: ->
-		directives  = []
+		directives = []
 
 		index = 0
 		while expr = @body.expressions[index]
@@ -3139,7 +3139,7 @@ exports.ExecutableClassBody = class ExecutableClassBody extends Base
 	setContext: ->
 		@body.traverseChildren false, (node) =>
 			if node instanceof ThisLiteral
-				node.value   = @name
+				node.value = @name
 			else if node instanceof Code and node.bound and (node.isStatic or not node.name)
 				node.context = @name
 
@@ -3147,8 +3147,8 @@ exports.ExecutableClassBody = class ExecutableClassBody extends Base
 	addProperties: (assigns) ->
 		result = for assign in assigns
 			variable = assign.variable
-			base     = variable?.base
-			value    = assign.value
+			base = variable?.base
+			value = assign.value
 			delete assign.context
 
 			if base.value is 'constructor'
@@ -3164,7 +3164,7 @@ exports.ExecutableClassBody = class ExecutableClassBody extends Base
 					else
 						new (if base.shouldCache() then Index else Access) base
 				prototype = new Access new PropertyName 'prototype'
-				variable  = new Value new ThisLiteral(), [ prototype, name ]
+				variable = new Value new ThisLiteral(), [ prototype, name ]
 
 				assign.variable = variable
 			else if assign.value instanceof Code
@@ -3214,8 +3214,8 @@ exports.ModuleDeclaration = class ModuleDeclaration extends Base
 	children: ['clause', 'source', 'assertions']
 
 	isStatement: YES
-	jumps:       THIS
-	makeReturn:  THIS
+	jumps: THIS
+	makeReturn: THIS
 
 	checkSource: ->
 		if @source? and @source instanceof StringWithInterpolations
@@ -3394,7 +3394,7 @@ exports.ModuleSpecifier = class ModuleSpecifier extends Base
 		if @original.comments or @alias?.comments
 			@comments = []
 			@comments.push @original.comments... if @original.comments
-			@comments.push @alias.comments...    if @alias?.comments
+			@comments.push @alias.comments... if @alias?.comments
 
 		# The name of the variable entering the local scope
 		@identifier = if @alias? then @alias.value else @original.value
@@ -3574,9 +3574,9 @@ exports.Assign = class Assign extends Base
 					else
 						return @compileDestructuring o
 
-			return @compileSplice       o if @variable.isSplice()
-			return @compileConditional  o if @isConditional()
-			return @compileSpecialMath  o if @context in ['//=', '%%=']
+			return @compileSplice o if @variable.isSplice()
+			return @compileConditional o if @isConditional()
+			return @compileSpecialMath o if @context in ['//=', '%%=']
 
 		@addScopeVariables o
 		if @value instanceof Code
@@ -3621,10 +3621,10 @@ exports.Assign = class Assign extends Base
 	# Brief implementation of recursive pattern matching, when assigning array or
 	# object literals to a value. Peeks at their properties to assign inner names.
 	compileDestructuring: (o) ->
-		top       = o.level is LEVEL_TOP
-		{value}   = this
+		top = o.level is LEVEL_TOP
+		{value} = this
 		{objects} = @variable.base
-		olen      = objects.length
+		olen = objects.length
 
 		# Special-case for `{} = a` and `[] = a` (empty patterns).
 		# Compile to simply `a`.
@@ -3639,9 +3639,9 @@ exports.Assign = class Assign extends Base
 		isSplat = splats?.length > 0
 		isExpans = expans?.length > 0
 
-		vvar     = value.compileToFragments o, LEVEL_LIST
+		vvar = value.compileToFragments o, LEVEL_LIST
 		vvarText = fragmentsToText vvar
-		assigns  = []
+		assigns = []
 		pushAssign = (variable, val) =>
 			assigns.push new Assign(variable, val, null, param: @param, subpattern: yes).compileToFragments o, LEVEL_LIST
 
@@ -3731,15 +3731,15 @@ exports.Assign = class Assign extends Base
 
 		# In case there is `Splat` or `Expansion` in `objects`,
 		# we can split array in two simple subarrays.
-		# `Splat` [a, b, c..., d, e] can be split into  [a, b, c...] and [d, e].
+		# `Splat` [a, b, c..., d, e] can be split into [a, b, c...] and [d, e].
 		# `Expansion` [a, b, ..., c, d] can be split into [a, b] and [c, d].
 		# Examples:
 		# a) `Splat`
-		#   CS: [a, b, c..., d, e] = arr
-		#   JS: [a, b, ...c] = arr, [d, e] = splice.call(c, -2)
+		# CS: [a, b, c..., d, e] = arr
+		# JS: [a, b, ...c] = arr, [d, e] = splice.call(c, -2)
 		# b) `Expansion`
-		#   CS: [a, b, ..., d, e] = arr
-		#   JS: [a, b] = arr, [d, e] = slice.call(arr, -2)
+		# CS: [a, b, ..., d, e] = arr
+		# JS: [a, b] = arr, [d, e] = slice.call(arr, -2)
 		if splatsAndExpans.length
 			expIdx = splatsAndExpans[0]
 			leftObjs = objects.slice 0, expIdx + (if isSplat then 1 else 0)
@@ -3898,12 +3898,12 @@ exports.Code = class Code extends Base
 	constructor: (params, body, @funcGlyph, @paramStart) ->
 		super()
 
-		@params      = params or []
-		@body        = body or new Block
-		@bound       = @funcGlyph?.glyph is '=>'
+		@params = params or []
+		@body = body or new Block
+		@bound = @funcGlyph?.glyph is '=>'
 		@isGenerator = no
-		@isAsync     = no
-		@isMethod    = no
+		@isAsync = no
+		@isMethod = no
 
 		@body.traverseChildren no, (node) =>
 			if (node instanceof Op and node.isYield()) or node instanceof YieldReturn
@@ -3937,12 +3937,12 @@ exports.Code = class Code extends Base
 			@context = 'this' unless @context
 
 		@updateOptions o
-		params           = []
-		exprs            = []
-		thisAssignments  = @thisAssignments?.slice() ? []
+		params = []
+		exprs = []
+		thisAssignments = @thisAssignments?.slice() ? []
 		paramsAfterSplat = []
-		haveSplatParam   = no
-		haveBodyParam    = no
+		haveSplatParam = no
+		haveBodyParam = no
 
 		@checkForDuplicateParams()
 		@disallowLoneExpansionAndMultipleSplats()
@@ -3950,8 +3950,8 @@ exports.Code = class Code extends Base
 		# Separate `this` assignments.
 		@eachParamName (name, node, param, obj) ->
 			if node.this
-				name   = node.properties[0].name.value
-				name   = "_#{name}" if name in JS_FORBIDDEN
+				name = node.properties[0].name.value
+				name = "_#{name}" if name in JS_FORBIDDEN
 				target = new IdentifierLiteral o.scope.freeVariable name, reserve: no
 				# `Param` is object destructuring with a default value: ({@prop = 1}) ->
 				# In a case when the variable name is already reserved, we have to assign
@@ -4086,7 +4086,7 @@ exports.Code = class Code extends Base
 		# Assemble the output
 		modifiers = []
 		modifiers.push 'static' if @isMethod and @isStatic
-		modifiers.push 'async'  if @isAsync
+		modifiers.push 'async' if @isAsync
 		unless @isMethod or @bound
 			modifiers.push "function#{if @isGenerator then '*' else ''}"
 		else if @isGenerator
@@ -4137,9 +4137,9 @@ exports.Code = class Code extends Base
 		if @front or (o.level >= LEVEL_ACCESS) then @wrapInParentheses answer else answer
 
 	updateOptions: (o) ->
-		o.scope         = del(o, 'classScope') or @makeScope o.scope
-		o.scope.shared  = del(o, 'sharedScope')
-		o.indent        += TAB
+		o.scope = del(o, 'classScope') or @makeScope o.scope
+		o.scope.shared = del(o, 'sharedScope')
+		o.indent += TAB
 		delete o.bare
 		delete o.isExistentialEquals
 
@@ -4185,7 +4185,7 @@ exports.Code = class Code extends Base
 
 	checkForAsyncOrGeneratorConstructor: ->
 		if @ctor
-			@name.error 'Class constructor may not be async'       if @isAsync
+			@name.error 'Class constructor may not be async' if @isAsync
 			@name.error 'Class constructor may not be a generator' if @isGenerator
 
 	disallowLoneExpansionAndMultipleSplats: ->
@@ -4429,14 +4429,14 @@ exports.Param = class Param extends Base
 	# Rename a param by replacing the given AST node for a name with a new node.
 	# This needs to ensure that the the source for object destructuring does not change.
 	renameParam: (node, newNode) ->
-		isNode      = (candidate) -> candidate is node
+		isNode = (candidate) -> candidate is node
 		replacement = (node, parent) =>
 			if parent instanceof Obj
 				key = node
 				key = node.properties[0].name if node.this
 				# No need to assign a new variable for the destructured variable if the variable isn't reserved.
 				# Examples:
-				# `({@foo}) ->`  should compile to `({foo}) { this.foo = foo}`
+				# `({@foo}) ->` should compile to `({foo}) { this.foo = foo}`
 				# `foo = 1; ({@foo}) ->` should compile to `foo = 1; ({foo:foo1}) { this.foo = foo1 }`
 				if node.this and key.value is newNode.value
 					new Value newNode
@@ -4584,14 +4584,14 @@ exports.While = class While extends Base
 	# return an array containing the computed result of each iteration.
 	compileNode: (o) ->
 		o.indent += TAB
-		set      = ''
-		{body}   = this
+		set = ''
+		{body} = this
 		if body.isEmpty()
 			body = @makeCode ''
 		else
 			if @returns
 				body.makeReturn rvar = o.scope.freeVariable 'results'
-				set  = "#{@tab}#{rvar} = [];\n"
+				set = "#{@tab}#{rvar} = [];\n"
 			if @guard
 				if body.expressions.length > 1
 					body.expressions.unshift new If (new Parens @guard).invert(), new StatementLiteral "continue"
@@ -4636,9 +4636,9 @@ exports.Op = class Op extends Base
 			return call
 
 		@operator = CONVERSIONS[op] or op
-		@first    = first
-		@second   = second
-		@flip     = !!flip
+		@first = first
+		@second = second
+		@flip = !!flip
 
 		if @operator in ['--', '++']
 			message = isUnassignable @first.unwrapAll().value
@@ -4648,9 +4648,9 @@ exports.Op = class Op extends Base
 
 	# The map of conversions from CoffeeScript to JavaScript symbols.
 	CONVERSIONS =
-		'==':        '==='
-		'!=':        '!=='
-		'of':        'in'
+		'==': '==='
+		'!=': '!=='
+		'of': 'in'
 		'yieldfrom': 'yield*'
 
 	# The map of invertible operators.
@@ -4750,10 +4750,10 @@ exports.Op = class Op extends Base
 		@first.front = @front unless isChain
 		@checkDeleteOperand o
 		return @compileContinuation o if @isYield() or @isAwait()
-		return @compileUnary        o if @isUnary()
-		return @compileChain        o if isChain
+		return @compileUnary o if @isUnary()
+		return @compileChain o if isChain
 		switch @operator
-			when '?'  then @compileExistence o, @second.isDefaultValue
+			when '?' then @compileExistence o, @second.isDefaultValue
 			when '//' then @compileFloorDivision o
 			when '%%' then @compileModulo o
 			else
@@ -4765,8 +4765,8 @@ exports.Op = class Op extends Base
 	# Mimic Python's chained comparisons when multiple comparison operators are
 	# used sequentially. For example:
 	#
-	#     bin/coffee -e 'console.log 50 < 65 > 10'
-	#     true
+	# bin/coffee -e 'console.log 50 < 65 > 10'
+	# true
 	compileChain: (o) ->
 		[@first.second, shared] = @first.second.cache o
 		fst = @first.compileToFragments o, LEVEL_OP
@@ -4851,10 +4851,10 @@ exports.Op = class Op extends Base
 		return 'ChainedComparison' if @isChain()
 		switch @operator
 			when '||', '&&', '?' then 'LogicalExpression'
-			when '++', '--'      then 'UpdateExpression'
+			when '++', '--' then 'UpdateExpression'
 			else
-				if @isUnary()      then 'UnaryExpression'
-				else                    'BinaryExpression'
+				if @isUnary() then 'UnaryExpression'
+				else 'BinaryExpression'
 
 	operatorAst: ->
 		"#{if @invertOperator then "#{@invertOperator} " else ''}#{@originalOperator}"
@@ -4961,15 +4961,15 @@ exports.Try = class Try extends Base
 			@catch?.makeReturn results, mark
 			return
 		@attempt = @attempt.makeReturn results if @attempt
-		@catch   = @catch  .makeReturn results if @catch
+		@catch = @catch .makeReturn results if @catch
 		this
 
 	# Compilation is more or less as you would expect -- the *finally* clause
 	# is optional, the *catch* is not.
 	compileNode: (o) ->
 		originalIndent = o.indent
-		o.indent  += TAB
-		tryPart   = @attempt.compileToFragments o, LEVEL_TOP
+		o.indent += TAB
+		tryPart = @attempt.compileToFragments o, LEVEL_TOP
 
 		catchPart = if @catch
 			@catch.compileToFragments merge(o, indent: originalIndent), LEVEL_TOP
@@ -5021,7 +5021,7 @@ exports.Catch = class Catch extends Base
 		this
 
 	compileNode: (o) ->
-		o.indent  += TAB
+		o.indent += TAB
 		generatedErrorVariableName = o.scope.freeVariable 'error', reserve: no
 		placeholder = new IdentifierLiteral generatedErrorVariableName
 		@checkUnassignable()
@@ -5060,7 +5060,7 @@ exports.Throw = class Throw extends Base
 	children: ['expression']
 
 	isStatement: YES
-	jumps:       NO
+	jumps: NO
 
 	# A **Throw** is already a return, of sorts...
 	makeReturn: THIS
@@ -5354,16 +5354,16 @@ exports.For = class For extends While
 		this
 
 	addSource: (source) ->
-		{@source  = no} = source
-		attribs   = ["name", "index", "guard", "step", "own", "ownTag", "await", "awaitTag", "object", "from"]
-		@[attr]   = source[attr] ? @[attr] for attr in attribs
+		{@source = no} = source
+		attribs = ["name", "index", "guard", "step", "own", "ownTag", "await", "awaitTag", "object", "from"]
+		@[attr] = source[attr] ? @[attr] for attr in attribs
 		return this unless @source
 		@index.error 'cannot use index with for-from' if @from and @index
 		@ownTag.error "cannot use own with for-#{if @from then 'from' else 'in'}" if @own and not @object
 		[@name, @index] = [@index, @name] if @object
 		@index.error 'index cannot be a pattern matching expression' if @index?.isArray?() or @index?.isObject?()
 		@awaitTag.error 'await must be used with for-from' if @await and not @from
-		@range   = @source instanceof Value and @source.base instanceof Range and not @source.properties.length and not @from
+		@range = @source instanceof Value and @source.base instanceof Range and not @source.properties.length and not @from
 		@pattern = @name instanceof Value
 		@name.unwrap().propagateLhs?(yes) if @pattern
 		@index.error 'indexes do not apply to range loops' if @range and @index
@@ -5389,40 +5389,40 @@ exports.For = class For extends While
 	# comprehensions. Some of the generated code can be shared in common, and
 	# some cannot.
 	compileNode: (o) ->
-		body        = Block.wrap [@body]
+		body = Block.wrap [@body]
 		[..., last] = body.expressions
-		@returns    = no if last?.jumps() instanceof Return
-		source      = if @range then @source.base else @source
-		scope       = o.scope
-		name        = @name  and (@name.compile o, LEVEL_LIST) if not @pattern
-		index       = @index and (@index.compile o, LEVEL_LIST)
-		scope.find(name)  if name and not @pattern
+		@returns = no if last?.jumps() instanceof Return
+		source = if @range then @source.base else @source
+		scope = o.scope
+		name = @name and (@name.compile o, LEVEL_LIST) if not @pattern
+		index = @index and (@index.compile o, LEVEL_LIST)
+		scope.find(name) if name and not @pattern
 		scope.find(index) if index and @index not instanceof Value
-		rvar        = scope.freeVariable 'results' if @returns
+		rvar = scope.freeVariable 'results' if @returns
 		if @from
 			ivar = scope.freeVariable 'x', single: true if @pattern
 		else
 			ivar = (@object and index) or scope.freeVariable 'i', single: true
-		kvar        = ((@range or @from) and name) or index or ivar
-		kvarAssign  = if kvar isnt ivar then "#{kvar} = " else ""
+		kvar = ((@range or @from) and name) or index or ivar
+		kvarAssign = if kvar isnt ivar then "#{kvar} = " else ""
 		if @step and not @range
 			[step, stepVar] = @cacheToCodeFragments @step.cache o, LEVEL_LIST, shouldCacheOrIsAssignable
-			stepNum   = parseNumber stepVar if @step.isNumber()
-		name        = ivar if @pattern
-		varPart     = ''
-		guardPart   = ''
-		defPart     = ''
-		idt1        = @tab + TAB
+			stepNum = parseNumber stepVar if @step.isNumber()
+		name = ivar if @pattern
+		varPart = ''
+		guardPart = ''
+		defPart = ''
+		idt1 = @tab + TAB
 		if @range
 			forPartFragments = source.compileToFragments merge o,
 				{index: ivar, name, @step, shouldCache: shouldCacheOrIsAssignable}
 		else
-			svar    = @source.compile o, LEVEL_LIST
+			svar = @source.compile o, LEVEL_LIST
 			if (name or @own) and not @from and @source.unwrap() not instanceof IdentifierLiteral
-				defPart    += "#{@tab}#{ref = scope.freeVariable 'ref'} = #{svar};\n"
-				svar       = ref
+				defPart += "#{@tab}#{ref = scope.freeVariable 'ref'} = #{svar};\n"
+				svar = ref
 			if name and not @pattern and not @from
-				namePart   = "#{name} = #{svar}[#{kvar}]"
+				namePart = "#{name} = #{svar}[#{kvar}]"
 			if not @object and not @from
 				defPart += "#{@tab}#{step};\n" if step isnt stepVar
 				down = stepNum < 0
@@ -5444,7 +5444,7 @@ exports.For = class For extends While
 					increment = "#{if kvar isnt ivar then "++#{ivar}" else "#{ivar}++"}"
 				forPartFragments = [@makeCode("#{declare}; #{compare}; #{kvarAssign}#{increment}")]
 		if @returns
-			resultPart   = "#{@tab}#{rvar} = [];\n"
+			resultPart = "#{@tab}#{rvar} = [];\n"
 			returnResult = "\n#{@tab}return #{rvar};"
 			body.makeReturn rvar
 		if @guard
@@ -5501,10 +5501,10 @@ exports.For = class For extends While
 			own: !!@own
 			await: !!@await
 			style: switch
-				when @from   then 'from'
+				when @from then 'from'
 				when @object then 'of'
-				when @name   then 'in'
-				else              'range'
+				when @name then 'in'
+				else 'range'
 
 #### Switch
 
@@ -5536,7 +5536,7 @@ exports.Switch = class Switch extends Base
 			@makeCode(") {\n")
 		for {conditions, block}, i in @cases
 			for cond in flatten [conditions]
-				cond  = cond.invert() unless @subject
+				cond = cond.invert() unless @subject
 				fragments = fragments.concat @makeCode(idt1 + "case "), cond.compileToFragments(o, LEVEL_PAREN), @makeCode(":\n")
 			fragments = fragments.concat body, @makeCode('\n') if (body = block.compileToFragments o, LEVEL_TOP).length > 0
 			break if i is @cases.length - 1 and not @otherwise
@@ -5567,7 +5567,7 @@ exports.Switch = class Switch extends Base
 				caseLocationData = test.locationData
 				caseLocationData = mergeLocationData caseLocationData, testConsequent.expressions[testConsequent.expressions.length - 1].locationData if testConsequent?.expressions.length
 				caseLocationData = mergeLocationData caseLocationData, kase.locationData, justLeading: yes if testIndex is 0
-				caseLocationData = mergeLocationData caseLocationData, kase.locationData, justEnding:  yes if testIndex is lastTestIndex
+				caseLocationData = mergeLocationData caseLocationData, kase.locationData, justEnding: yes if testIndex is lastTestIndex
 
 				cases.push new SwitchCase(test, testConsequent, trailing: testIndex is lastTestIndex).withLocationDataFrom locationData: caseLocationData
 
@@ -5609,14 +5609,14 @@ exports.SwitchWhen = class SwitchWhen extends Base
 exports.If = class If extends Base
 	constructor: (@condition, @body, options = {}) ->
 		super()
-		@elseBody  = null
-		@isChain   = false
+		@elseBody = null
+		@isChain = false
 		{@soak, @postfix, @type} = options
 		moveComments @condition, @ if @condition.comments
 
 	children: ['condition', 'body', 'elseBody']
 
-	bodyNode:     -> @body?.unwrap()
+	bodyNode: -> @body?.unwrap()
 	elseBodyNode: -> @elseBody?.unwrap()
 
 	# Rewrite a chain of **Ifs** to add a default case as the final *else*.
@@ -5625,7 +5625,7 @@ exports.If = class If extends Base
 			@elseBodyNode().addElse elseBody
 			@locationData = mergeLocationData @locationData, @elseBodyNode().locationData
 		else
-			@isChain  = elseBody instanceof If
+			@isChain = elseBody instanceof If
 			@elseBody = @ensureBlock elseBody
 			@elseBody.updateLocationDataIfMissing elseBody.locationData
 			@locationData = mergeLocationData @locationData, @elseBody.locationData if @locationData? and @elseBody.locationData?
@@ -5647,8 +5647,8 @@ exports.If = class If extends Base
 			@body?.makeReturn results, mark
 			@elseBody?.makeReturn results, mark
 			return
-		@elseBody  or= new Block [new Literal 'void 0'] if results
-		@body     and= new Block [@body.makeReturn results]
+		@elseBody or= new Block [new Literal 'void 0'] if results
+		@body and= new Block [@body.makeReturn results]
 		@elseBody and= new Block [@elseBody.makeReturn results]
 		this
 
@@ -5658,16 +5658,16 @@ exports.If = class If extends Base
 	# Compile the `If` as a regular *if-else* statement. Flattened chains
 	# force inner *else* bodies into statement form.
 	compileStatement: (o) ->
-		child    = del o, 'chainChild'
-		exeq     = del o, 'isExistentialEquals'
+		child = del o, 'chainChild'
+		exeq = del o, 'isExistentialEquals'
 
 		if exeq
 			return new If(@processedCondition().invert(), @elseBodyNode(), type: 'if').compileToFragments o
 
-		indent   = o.indent + TAB
-		cond     = @processedCondition().compileToFragments o, LEVEL_PAREN
-		body     = @ensureBlock(@body).compileToFragments merge o, {indent}
-		ifPart   = [].concat @makeCode("if ("), cond, @makeCode(") {\n"), body, @makeCode("\n#{@tab}}")
+		indent = o.indent + TAB
+		cond = @processedCondition().compileToFragments o, LEVEL_PAREN
+		body = @ensureBlock(@body).compileToFragments merge o, {indent}
+		ifPart = [].concat @makeCode("if ("), cond, @makeCode(") {\n"), body, @makeCode("\n#{@tab}}")
 		ifPart.unshift @makeCode @tab unless child
 		return ifPart unless @elseBody
 		answer = ifPart.concat @makeCode(' else ')
@@ -5682,7 +5682,7 @@ exports.If = class If extends Base
 	compileExpression: (o) ->
 		cond = @processedCondition().compileToFragments o, LEVEL_COND
 		body = @bodyNode().compileToFragments o, LEVEL_LIST
-		alt  = if @elseBodyNode() then @elseBodyNode().compileToFragments(o, LEVEL_LIST) else [@makeCode('void 0')]
+		alt = if @elseBodyNode() then @elseBodyNode().compileToFragments(o, LEVEL_LIST) else [@makeCode('void 0')]
 		fragments = cond.concat @makeCode(" ? "), body, @makeCode(" : "), alt
 		if o.level >= LEVEL_COND then @wrapInParentheses fragments else fragments
 
@@ -5757,33 +5757,34 @@ UTILITIES =
 	# Shortcuts to speed up the lookup time for native functions.
 	hasProp: -> '{}.hasOwnProperty'
 	indexOf: -> '[].indexOf'
-	slice  : -> '[].slice'
+	slice : -> '[].slice'
 	splice : -> '[].splice'
 
 # Levels indicate a node's position in the AST. Useful for knowing if
 # parens are necessary or superfluous.
-LEVEL_TOP    = 1  # ...;
-LEVEL_PAREN  = 2  # (...)
-LEVEL_LIST   = 3  # [...]
-LEVEL_COND   = 4  # ... ? x : y
-LEVEL_OP     = 5  # !...
-LEVEL_ACCESS = 6  # ...[0]
+LEVEL_TOP = 1 # ...;
+LEVEL_PAREN = 2 # (...)
+LEVEL_LIST = 3 # [...]
+LEVEL_COND = 4 # ... ? x : y
+LEVEL_OP = 5 # !...
+LEVEL_ACCESS = 6 # ...[0]
 
 # Tabs are two spaces for pretty printing.
-TAB = '  '
+# nope they are tabs
+TAB = '\t'
 
 SIMPLENUM = /^[+-]?\d+(?:_\d+)*$/
 SIMPLE_STRING_OMIT = /\s*\n\s*/g
-LEADING_BLANK_LINE  = /^[^\n\S]*\n/
+LEADING_BLANK_LINE = /^[^\n\S]*\n/
 TRAILING_BLANK_LINE = /\n[^\n\S]*$/
-STRING_OMIT    = ///
-		((?:\\\\)+)      # Consume (and preserve) an even number of backslashes.
-	| \\[^\S\n]*\n\s*  # Remove escaped newlines.
+STRING_OMIT = ///
+		((?:\\\\)+) # Consume (and preserve) an even number of backslashes.
+	| \\[^\S\n]*\n\s* # Remove escaped newlines.
 ///g
 HEREGEX_OMIT = ///
-		((?:\\\\)+)     # Consume (and preserve) an even number of backslashes.
-	| \\(\s)          # Preserve escaped whitespace.
-	| \s+(?:#.*)?     # Remove whitespace and comments.
+		((?:\\\\)+) # Consume (and preserve) an even number of backslashes.
+	| \\(\s) # Preserve escaped whitespace.
+	| \s+(?:#.*)? # Remove whitespace and comments.
 ///g
 
 # Helper Functions
@@ -5864,11 +5865,11 @@ makeDelimitedLiteral = (body, {delimiter: delimiterOption, escapeNewlines, doubl
 	body = '(?:)' if body is '' and delimiterOption is '/'
 	escapeTemplateLiteralCurlies = delimiterOption is '`'
 	regex = ///
-			(\\\\)                               # Escaped backslash.
-		| (\\0(?=\d))                          # Null character mistaken as octal escape.
+			(\\\\) # Escaped backslash.
+		| (\\0(?=\d)) # Null character mistaken as octal escape.
 		#{
 			if convertTrailingNullEscapes
-				/// | (\\0) $ ///.source           # Trailing null character that could be mistaken as octal escape.
+				/// | (\\0) $ ///.source # Trailing null character that could be mistaken as octal escape.
 			else
 				''
 		}
@@ -5880,7 +5881,7 @@ makeDelimitedLiteral = (body, {delimiter: delimiterOption, escapeNewlines, doubl
 		}
 		#{
 			if escapeTemplateLiteralCurlies
-				/// | \\?(\$\{) ///.source         # `${` inside template literals must be escaped.
+				/// | \\?(\$\{) ///.source # `${` inside template literals must be escaped.
 			else
 				''
 		}
@@ -5889,8 +5890,8 @@ makeDelimitedLiteral = (body, {delimiter: delimiterOption, escapeNewlines, doubl
 					(\r)
 				| (\u2028)
 				| (\u2029)
-			)                                    # (Possibly escaped) newlines.
-		| (\\.)                                # Other escapes.
+			) # (Possibly escaped) newlines.
+		| (\\.) # Other escapes.
 	///g
 	body = body.replace regex, (match, backslash, nul, ...args) ->
 		trailingNullEscape =
@@ -5905,15 +5906,15 @@ makeDelimitedLiteral = (body, {delimiter: delimiterOption, escapeNewlines, doubl
 		switch
 			# Ignore escaped backslashes.
 			when backslash then (if double then backslash + backslash else backslash)
-			when nul                  then '\\x00'
-			when trailingNullEscape   then "\\x00"
-			when delimiter            then "\\#{delimiter}"
+			when nul then '\\x00'
+			when trailingNullEscape then "\\x00"
+			when delimiter then "\\#{delimiter}"
 			when templateLiteralCurly then "\\${"
-			when lf                   then '\\n'
-			when cr                   then '\\r'
-			when ls                   then '\\u2028'
-			when ps                   then '\\u2029'
-			when other                then (if double then "\\#{other}" else other)
+			when lf then '\\n'
+			when cr then '\\r'
+			when ls then '\\u2028'
+			when ps then '\\u2029'
+			when other then (if double then "\\#{other}" else other)
 	printedDelimiter = if includeDelimiters then delimiterOption else ''
 	"#{printedDelimiter}#{body}#{printedDelimiter}"
 
@@ -5941,7 +5942,7 @@ astAsBlockIfNeeded = (node, o) ->
 		node.ast o, LEVEL_PAREN
 
 # Helpers for `mergeLocationData` and `mergeAstLocationData` below.
-lesser  = (a, b) -> if a < b then a else b
+lesser = (a, b) -> if a < b then a else b
 greater = (a, b) -> if a > b then a else b
 
 isAstLocGreater = (a, b) ->
@@ -5969,38 +5970,38 @@ isLocationDataEndGreater = (a, b) ->
 # options. So e.g. if `first`’s range is [4, 5] and `second`’s range is [1, 10],
 # you’d get:
 # ```
-# mergeLocationData(first, second).range                   # [1, 10]
+# mergeLocationData(first, second).range # [1, 10]
 # mergeLocationData(first, second, justLeading: yes).range # [1, 5]
-# mergeLocationData(first, second, justEnding:  yes).range # [4, 10]
+# mergeLocationData(first, second, justEnding: yes).range # [4, 10]
 # ```
 exports.mergeLocationData = mergeLocationData = (locationDataA, locationDataB, {justLeading, justEnding} = {}) ->
 	return Object.assign(
 		if justEnding
-			first_line:   locationDataA.first_line
+			first_line: locationDataA.first_line
 			first_column: locationDataA.first_column
 		else
 			if isLocationDataStartGreater locationDataA, locationDataB
-				first_line:   locationDataB.first_line
+				first_line: locationDataB.first_line
 				first_column: locationDataB.first_column
 			else
-				first_line:   locationDataA.first_line
+				first_line: locationDataA.first_line
 				first_column: locationDataA.first_column
 	,
 		if justLeading
-			last_line:             locationDataA.last_line
-			last_column:           locationDataA.last_column
-			last_line_exclusive:   locationDataA.last_line_exclusive
+			last_line: locationDataA.last_line
+			last_column: locationDataA.last_column
+			last_line_exclusive: locationDataA.last_line_exclusive
 			last_column_exclusive: locationDataA.last_column_exclusive
 		else
 			if isLocationDataEndGreater locationDataA, locationDataB
-				last_line:             locationDataA.last_line
-				last_column:           locationDataA.last_column
-				last_line_exclusive:   locationDataA.last_line_exclusive
+				last_line: locationDataA.last_line
+				last_column: locationDataA.last_column
+				last_line_exclusive: locationDataA.last_line_exclusive
 				last_column_exclusive: locationDataA.last_column_exclusive
 			else
-				last_line:             locationDataB.last_line
-				last_column:           locationDataB.last_column
-				last_line_exclusive:   locationDataB.last_line_exclusive
+				last_line: locationDataB.last_line
+				last_column: locationDataB.last_column
+				last_line_exclusive: locationDataB.last_line_exclusive
 				last_column_exclusive: locationDataB.last_column_exclusive
 	,
 		range: [
@@ -6026,9 +6027,9 @@ exports.mergeLocationData = mergeLocationData = (locationDataA, locationDataB, {
 # options. So e.g. if `first`’s range is [4, 5] and `second`’s range is [1, 10],
 # you’d get:
 # ```
-# mergeAstLocationData(first, second).range                   # [1, 10]
+# mergeAstLocationData(first, second).range # [1, 10]
 # mergeAstLocationData(first, second, justLeading: yes).range # [1, 5]
-# mergeAstLocationData(first, second, justEnding:  yes).range # [4, 10]
+# mergeAstLocationData(first, second, justEnding: yes).range # [4, 10]
 # ```
 exports.mergeAstLocationData = mergeAstLocationData = (nodeA, nodeB, {justLeading, justEnding} = {}) ->
 	return
@@ -6076,17 +6077,17 @@ exports.jisonLocationDataToAstLocationData = jisonLocationDataToAstLocationData 
 	return
 		loc:
 			start:
-				line:   first_line + 1
+				line: first_line + 1
 				column: first_column
 			end:
-				line:   last_line_exclusive + 1
+				line: last_line_exclusive + 1
 				column: last_column_exclusive
 		range: [
 			range[0]
 			range[1]
 		]
 		start: range[0]
-		end:   range[1]
+		end: range[1]
 
 # Generate a zero-width location data that corresponds to the end of another node’s location.
 zeroWidthLocationDataFromEndLocation = ({range: [, endRange], last_line_exclusive, last_column_exclusive}) -> {
@@ -6126,11 +6127,11 @@ extractSameLineLocationDataLast = (numChars) -> ({range: [, endRange], last_line
 # incorrect if the ending brace is preceded by a newline, but
 # last_line/last_column aren’t used for AST generation anyway.
 emptyExpressionLocationData = ({interpolationNode: element, openingBrace, closingBrace}) ->
-	first_line:            element.locationData.first_line
-	first_column:          element.locationData.first_column + openingBrace.length
-	last_line:             element.locationData.last_line
-	last_column:           element.locationData.last_column - closingBrace.length
-	last_line_exclusive:   element.locationData.last_line
+	first_line: element.locationData.first_line
+	first_column: element.locationData.first_column + openingBrace.length
+	last_line: element.locationData.last_line
+	last_column: element.locationData.last_column - closingBrace.length
+	last_line_exclusive: element.locationData.last_line
 	last_column_exclusive: element.locationData.last_column
 	range: [
 		element.locationData.range[0] + openingBrace.length

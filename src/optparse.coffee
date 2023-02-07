@@ -3,8 +3,8 @@
 # A simple **OptionParser** class to parse option flags from the command-line.
 # Use it like so:
 #
-#     parser  = new OptionParser switches, helpBanner
-#     options = parser.parse process.argv
+# parser = new OptionParser switches, helpBanner
+# options = parser.parse process.argv
 #
 # The first non-option is considered to be the start of the file (and file
 # option) list, and all subsequent arguments are left unparsed.
@@ -15,7 +15,7 @@ exports.OptionParser = class OptionParser
 
 	# Initialize with a list of valid options, in the form:
 	#
-	#     [short-flag, long-flag, description]
+	# [short-flag, long-flag, description]
 	#
 	# Along with an optional banner for the usage help.
 	constructor: (ruleDeclarations, @banner) ->
@@ -63,22 +63,22 @@ exports.OptionParser = class OptionParser
 		lines = []
 		lines.unshift "#{@banner}\n" if @banner
 		for rule in @rules.ruleList
-			spaces  = 15 - rule.longFlag.length
-			spaces  = if spaces > 0 then repeat ' ', spaces else ''
-			letPart = if rule.shortFlag then rule.shortFlag + ', ' else '    '
-			lines.push '  ' + letPart + rule.longFlag + spaces + rule.description
+			spaces = 15 - rule.longFlag.length
+			spaces = if spaces > 0 then repeat ' ', spaces else ''
+			letPart = if rule.shortFlag then rule.shortFlag + ', ' else ' '
+			lines.push ' ' + letPart + rule.longFlag + spaces + rule.description
 		"\n#{ lines.join('\n') }\n"
 
 # Helpers
 # -------
 
 # Regex matchers for option flags on the command line and their rules.
-LONG_FLAG  = /^(--\w[\w\-]*)/
+LONG_FLAG = /^(--\w[\w\-]*)/
 SHORT_FLAG = /^(-\w)$/
 MULTI_FLAG = /^-(\w{2,})/
 # Matches the long flag part of a rule for an option with an argument. Not
 # applied to anything in process.argv.
-OPTIONAL   = /\[(\w+(\*?))\]/
+OPTIONAL = /\[(\w+(\*?))\]/
 
 # Build and return the list of option rules. If the optional *short-flag* is
 # unspecified, leave it out by padding with `null`.
@@ -100,16 +100,16 @@ buildRules = (ruleDeclarations) ->
 # Build a rule from a `-o` short flag, a `--output [DIR]` long flag, and the
 # description of what the option does.
 buildRule = (shortFlag, longFlag, description) ->
-	match     = longFlag.match(OPTIONAL)
+	match = longFlag.match(OPTIONAL)
 	shortFlag = shortFlag?.match(SHORT_FLAG)[1]
-	longFlag  = longFlag.match(LONG_FLAG)[1]
+	longFlag = longFlag.match(LONG_FLAG)[1]
 	{
-		name:         longFlag.replace /^--/, ''
-		shortFlag:    shortFlag
-		longFlag:     longFlag
-		description:  description
-		hasArgument:  !!(match and match[1])
-		isList:       !!(match and match[2])
+		name: longFlag.replace /^--/, ''
+		shortFlag: shortFlag
+		longFlag: longFlag
+		description: description
+		hasArgument: !!(match and match[1])
+		isList: !!(match and match[2])
 	}
 
 normalizeArguments = (args, flagDict) ->

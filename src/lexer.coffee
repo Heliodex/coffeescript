@@ -3,10 +3,10 @@
 # a token is produced, we consume the match, and start again. Tokens are in the
 # form:
 #
-#     [tag, value, locationData]
+# [tag, value, locationData]
 #
 # where locationData is {first_line, first_column, last_line, last_column, last_line_exclusive, last_column_exclusive}, which is a
-# format that can be fed directly into [Jison](https://github.com/zaach/jison).  These
+# format that can be fed directly into [Jison](https://github.com/zaach/jison). These
 # are read by jison in the `parser.lexer` function defined in coffeescript.coffee.
 
 {Rewriter, INVERSES, UNFINISHED} = require './rewriter'
@@ -35,32 +35,32 @@ exports.Lexer = class Lexer
 	#
 	# Before returning the token stream, run it through the [Rewriter](rewriter.html).
 	tokenize: (code, opts = {}) ->
-		@literate   = opts.literate  # Are we lexing literate CoffeeScript?
-		@indent     = 0              # The current indentation level.
-		@baseIndent = 0              # The overall minimum indentation level.
+		@literate = opts.literate # Are we lexing literate CoffeeScript?
+		@indent = 0 # The current indentation level.
+		@baseIndent = 0 # The overall minimum indentation level.
 		@continuationLineAdditionalIndent = 0 # The over-indentation at the current level.
-		@outdebt    = 0              # The under-outdentation at the current level.
-		@indents    = []             # The stack of all current indentation levels.
-		@indentLiteral = ''          # The indentation.
-		@ends       = []             # The stack for pairing up tokens.
-		@tokens     = []             # Stream of parsed tokens in the form `['TYPE', value, location data]`.
-		@seenFor    = no             # Used to recognize `FORIN`, `FOROF` and `FORFROM` tokens.
-		@seenImport = no             # Used to recognize `IMPORT FROM? AS?` tokens.
-		@seenExport = no             # Used to recognize `EXPORT FROM? AS?` tokens.
-		@importSpecifierList = no    # Used to identify when in an `IMPORT {...} FROM? ...`.
-		@exportSpecifierList = no    # Used to identify when in an `EXPORT {...} FROM? ...`.
-		@jsxDepth = 0                # Used to optimize JSX checks, how deep in JSX we are.
-		@jsxObjAttribute = {}        # Used to detect if JSX attributes is wrapped in {} (<div {props...} />).
+		@outdebt = 0 # The under-outdentation at the current level.
+		@indents = [] # The stack of all current indentation levels.
+		@indentLiteral = '' # The indentation.
+		@ends = [] # The stack for pairing up tokens.
+		@tokens = [] # Stream of parsed tokens in the form `['TYPE', value, location data]`.
+		@seenFor = no # Used to recognize `FORIN`, `FOROF` and `FORFROM` tokens.
+		@seenImport = no # Used to recognize `IMPORT FROM? AS?` tokens.
+		@seenExport = no # Used to recognize `EXPORT FROM? AS?` tokens.
+		@importSpecifierList = no # Used to identify when in an `IMPORT {...} FROM? ...`.
+		@exportSpecifierList = no # Used to identify when in an `EXPORT {...} FROM? ...`.
+		@jsxDepth = 0 # Used to optimize JSX checks, how deep in JSX we are.
+		@jsxObjAttribute = {} # Used to detect if JSX attributes is wrapped in {} (<div {props...} />).
 
 		@chunkLine =
-			opts.line or 0             # The start line for the current @chunk.
+			opts.line or 0 # The start line for the current @chunk.
 		@chunkColumn =
-			opts.column or 0           # The start column of the current @chunk.
+			opts.column or 0 # The start column of the current @chunk.
 		@chunkOffset =
-			opts.offset or 0           # The start offset for the current @chunk.
+			opts.offset or 0 # The start offset for the current @chunk.
 		@locationDataCompensations =
 			opts.locationDataCompensations or {} # The location data compensations for the current @chunk.
-		code = @clean code           # The stripped, cleaned original source code.
+		code = @clean code # The stripped, cleaned original source code.
 
 		# At every position, run through this list of attempted matches,
 		# short-circuiting if any of them succeed. Their order determines precedence:
@@ -69,14 +69,14 @@ exports.Lexer = class Lexer
 		while @chunk = code[i..]
 			consumed = \
 					@identifierToken() or
-					@commentToken()    or
+					@commentToken() or
 					@whitespaceToken() or
-					@lineToken()       or
-					@stringToken()     or
-					@numberToken()     or
-					@jsxToken()        or
-					@regexToken()      or
-					@jsToken()         or
+					@lineToken() or
+					@stringToken() or
+					@numberToken() or
+					@jsxToken() or
+					@regexToken() or
+					@jsToken() or
 					@literalToken()
 
 			# Update position.
@@ -237,13 +237,13 @@ exports.Lexer = class Lexer
 				id = COFFEE_ALIAS_MAP[id]
 				tokenData.original = alias
 			tag = switch id
-				when '!'                 then 'UNARY'
-				when '==', '!='          then 'COMPARE'
-				when 'true', 'false'     then 'BOOL'
+				when '!' then 'UNARY'
+				when '==', '!=' then 'COMPARE'
+				when 'true', 'false' then 'BOOL'
 				when 'break', 'continue', \
-							'debugger'          then 'STATEMENT'
-				when '&&', '||'          then id
-				else  tag
+							'debugger' then 'STATEMENT'
+				when '&&', '||' then id
+				else tag
 
 		tagToken = @token tag, id, length: idLength, data: tokenData
 		tagToken.origin = [tag, alias, tagToken[2]] if alias
@@ -299,8 +299,8 @@ exports.Lexer = class Lexer
 			prev[0] = 'FROM'
 
 		regex = switch quote
-			when "'"   then STRING_SINGLE
-			when '"'   then STRING_DOUBLE
+			when "'" then STRING_SINGLE
+			when '"' then STRING_DOUBLE
 			when "'''" then HEREDOC_SINGLE
 			when '"""' then HEREDOC_DOUBLE
 
@@ -404,7 +404,7 @@ exports.Lexer = class Lexer
 				locationData: @makeLocationData {offsetInChunk, length}
 				precededByBlankLine
 				indentSize
-				indented:  not noIndent and indentSize > @indent
+				indented: not noIndent and indentSize > @indent
 				outdented: not noIndent and indentSize < @indent
 			}
 			commentAttachment.heregex = yes if heregex
@@ -483,16 +483,16 @@ exports.Lexer = class Lexer
 				@validateUnicodeCodePointEscapes body, {delimiter}
 				@token 'REGEX', "/#{body}/#{flags}", {length: end, origin, data: {delimiter}}
 			else
-				@token 'REGEX_START', '(',    {length: 0, origin, generated: yes}
+				@token 'REGEX_START', '(', {length: 0, origin, generated: yes}
 				@token 'IDENTIFIER', 'RegExp', length: 0, generated: yes
-				@token 'CALL_START', '(',      length: 0, generated: yes
+				@token 'CALL_START', '(', length: 0, generated: yes
 				@mergeInterpolationTokens tokens, {double: yes, heregex: {flags}, endOffset: end - flags.length, quote: '///'}, (str) =>
 					@validateUnicodeCodePointEscapes str, {delimiter}
 				if flags
-					@token ',', ',',                    offset: index - 1, length: 0, generated: yes
-					@token 'STRING', '"' + flags + '"', offset: index,     length: flags.length
-				@token ')', ')',                      offset: end,       length: 0, generated: yes
-				@token 'REGEX_END', ')',              offset: end,       length: 0, generated: yes
+					@token ',', ',', offset: index - 1, length: 0, generated: yes
+					@token 'STRING', '"' + flags + '"', offset: index, length: flags.length
+				@token ')', ')', offset: end, length: 0, generated: yes
+				@token 'REGEX_END', ')', offset: end, length: 0, generated: yes
 
 		# Explicitly attach any heregex comments to the REGEX/REGEX_END token.
 		if commentTokens?.length
@@ -505,9 +505,9 @@ exports.Lexer = class Lexer
 	# If we can detect that the current line is continued onto the next line,
 	# then the newline is suppressed:
 	#
-	#     elements
-	#       .each( ... )
-	#       .map( ... )
+	# elements
+	# .each( ... )
+	# .map( ... )
 	#
 	# Keeps track of the level of indentation, because a single outdent token
 	# can close multiple indents, so we need to know how far in we happen to be.
@@ -574,7 +574,7 @@ exports.Lexer = class Lexer
 				@outdebt = moveOut = 0
 			else if @outdebt and moveOut <= @outdebt
 				@outdebt -= moveOut
-				moveOut   = 0
+				moveOut = 0
 			else
 				dent = @indents.pop() + @outdebt
 				if outdentLength and @chunk[outdentLength] in INDENTABLE_CLOSERS
@@ -758,7 +758,7 @@ exports.Lexer = class Lexer
 			@tagParameters() if CODE.test value
 		else
 			value = @chunk.charAt 0
-		tag  = value
+		tag = value
 		prev = @prev()
 
 		if prev and value in ['=', COMPOUND_ASSIGN...]
@@ -799,12 +799,12 @@ exports.Lexer = class Lexer
 			tag = 'TERMINATOR'
 		else if value is '*' and prev?[0] is 'EXPORT'
 			tag = 'EXPORT_ALL'
-		else if value in MATH            then tag = 'MATH'
-		else if value in COMPARE         then tag = 'COMPARE'
+		else if value in MATH then tag = 'MATH'
+		else if value in COMPARE then tag = 'COMPARE'
 		else if value in COMPOUND_ASSIGN then tag = 'COMPOUND_ASSIGN'
-		else if value in UNARY           then tag = 'UNARY'
-		else if value in UNARY_MATH      then tag = 'UNARY_MATH'
-		else if value in SHIFT           then tag = 'SHIFT'
+		else if value in UNARY then tag = 'UNARY'
+		else if value in UNARY_MATH then tag = 'UNARY_MATH'
+		else if value in SHIFT then tag = 'SHIFT'
 		else if value is '?' and prev?.spaced then tag = 'BIN?'
 		else if prev
 			if value is '(' and not prev.spaced and prev[0] in CALLABLE
@@ -814,7 +814,7 @@ exports.Lexer = class Lexer
 					(prev[0] is '::')) # `.prototype` can’t be a method you can call.
 				tag = 'INDEX_START'
 				switch prev[0]
-					when '?'  then prev[0] = 'INDEX_SOAK'
+					when '?' then prev[0] = 'INDEX_SOAK'
 		token = @makeToken tag, value
 		switch value
 			when '(', '{', '[' then @ends.push {tag: INVERSES[value], origin: token}
@@ -865,18 +865,18 @@ exports.Lexer = class Lexer
 	# inside it using Ruby-like notation for substitution of arbitrary
 	# expressions.
 	#
-	#     "Hello #{name.capitalize()}."
+	# "Hello #{name.capitalize()}."
 	#
 	# If it encounters an interpolation, this method will recursively create a new
 	# Lexer and tokenize until the `{` of `#{` is balanced with a `}`.
 	#
-	#  - `regex` matches the contents of a token (but not `delimiter`, and not
-	#    `#{` if interpolations are desired).
-	#  - `delimiter` is the delimiter of the token. Examples are `'`, `"`, `'''`,
-	#    `"""` and `///`.
-	#  - `closingDelimiter` is different from `delimiter` only in JSX
-	#  - `interpolators` matches the start of an interpolation, for JSX it's both
-	#    `{` and `<` (i.e. nested JSX tag)
+	# - `regex` matches the contents of a token (but not `delimiter`, and not
+	# `#{` if interpolations are desired).
+	# - `delimiter` is the delimiter of the token. Examples are `'`, `"`, `'''`,
+	# `"""` and `///`.
+	# - `closingDelimiter` is different from `delimiter` only in JSX
+	# - `interpolators` matches the start of an interpolation, for JSX it's both
+	# `{` and `<` (i.e. nested JSX tag)
 	#
 	# This method allows us to have strings within interpolations within strings,
 	# ad infinitum.
@@ -913,14 +913,14 @@ exports.Lexer = class Lexer
 				# Turn the leading and trailing `{` and `}` into parentheses. Unnecessary
 				# parentheses will be removed later.
 				[open, ..., close] = nested
-				open[0]  = 'INTERPOLATION_START'
-				open[1]  = '('
+				open[0] = 'INTERPOLATION_START'
+				open[1] = '('
 				open[2].first_column -= interpolationOffset
 				open[2].range = [
 					open[2].range[0] - interpolationOffset
 					open[2].range[1]
 				]
-				close[0]  = 'INTERPOLATION_END'
+				close[0] = 'INTERPOLATION_END'
 				close[1] = ')'
 				close.origin = ['', 'end of interpolation', close[2]]
 
@@ -931,8 +931,8 @@ exports.Lexer = class Lexer
 
 			unless braceInterpolator
 				# We are not using `{` and `}`, so wrap the interpolated tokens instead.
-				open = @makeToken 'INTERPOLATION_START', '(', offset: offsetInChunk,         length: 0, generated: yes
-				close = @makeToken 'INTERPOLATION_END', ')',  offset: offsetInChunk + index, length: 0, generated: yes
+				open = @makeToken 'INTERPOLATION_START', '(', offset: offsetInChunk, length: 0, generated: yes
+				close = @makeToken 'INTERPOLATION_END', ')', offset: offsetInChunk + index, length: 0, generated: yes
 				nested = [open, nested..., close]
 
 			# Push a fake `'TOKENS'` token, which will get turned into real tokens later.
@@ -979,7 +979,7 @@ exports.Lexer = class Lexer
 					# Convert `'NEOSTRING'` into `'STRING'`.
 					converted = fn.call this, token[1], i
 					addTokenData token, initialChunk: yes if i is 0
-					addTokenData token, finalChunk: yes   if i is $
+					addTokenData token, finalChunk: yes if i is $
 					addTokenData token, {indent, quote, double}
 					addTokenData token, {heregex} if heregex
 					addTokenData token, {jsx} if jsx
@@ -1005,11 +1005,11 @@ exports.Lexer = class Lexer
 		if lparen
 			[..., lastToken] = tokens
 			lparen.origin = ['STRING', null,
-				first_line:            lparen[2].first_line
-				first_column:          lparen[2].first_column
-				last_line:             lastToken[2].last_line
-				last_column:           lastToken[2].last_column
-				last_line_exclusive:   lastToken[2].last_line_exclusive
+				first_line: lparen[2].first_line
+				first_column: lparen[2].first_column
+				last_line: lastToken[2].last_line
+				last_column: lastToken[2].last_column
+				last_line_exclusive: lastToken[2].last_line_exclusive
 				last_column_exclusive: lastToken[2].last_column_exclusive
 				range: [
 					lparen[2].range[0]
@@ -1027,8 +1027,8 @@ exports.Lexer = class Lexer
 			@error "unmatched #{tag}" unless 'OUTDENT' is wanted
 			# Auto-close `INDENT` to support syntax like this:
 			#
-			#     el.click((event) ->
-			#       el.hide())
+			# el.click((event) ->
+			# el.hide())
 			#
 			[..., lastIndent] = @indents
 			@outdentToken moveOut: lastIndent, noNewlines: true
@@ -1113,7 +1113,7 @@ exports.Lexer = class Lexer
 
 	# Add a token to the results.
 	# `offset` is the offset into the current `@chunk` where the token starts.
-	# `length` is the length of the token in the `@chunk`, after the offset.  If
+	# `length` is the length of the token in the `@chunk`, after the offset. If
 	# not specified, the length of `value` will be used.
 	#
 	# Returns the new token.
@@ -1239,17 +1239,17 @@ COFFEE_KEYWORDS = [
 ]
 
 COFFEE_ALIAS_MAP =
-	and  : '&&'
-	or   : '||'
-	is   : '=='
+	and : '&&'
+	or : '||'
+	is : '=='
 	isnt : '!='
-	not  : '!'
-	yes  : 'true'
-	no   : 'false'
-	on   : 'true'
-	off  : 'false'
+	not : '!'
+	yes : 'true'
+	no : 'false'
+	on : 'true'
+	off : 'false'
 
-COFFEE_ALIASES  = (key for key of COFFEE_ALIAS_MAP)
+COFFEE_ALIASES = (key for key of COFFEE_ALIAS_MAP)
 COFFEE_KEYWORDS = COFFEE_KEYWORDS.concat COFFEE_ALIASES
 
 # The list of keywords that are reserved by JavaScript, but not used, or are
@@ -1274,7 +1274,7 @@ BOM = 65279
 IDENTIFIER = /// ^
 	(?!\d)
 	( (?: (?!\s)[$\w\x7f-\uffff] )+ )
-	( [^\n\S]* : (?!:) )?  # Is this a property name?
+	( [^\n\S]* : (?!:) )? # Is this a property name?
 ///
 
 # Like `IDENTIFIER`, but includes `-`s
@@ -1286,7 +1286,7 @@ JSX_IDENTIFIER_PART = /// (?: (?!\s)[\-$\w\x7f-\uffff] )+ ///.source
 JSX_IDENTIFIER = /// ^
 	(?![\d<]) # Must not start with `<`.
 	( #{JSX_IDENTIFIER_PART}
-		(?: \s* : \s* #{JSX_IDENTIFIER_PART}       # JSXNamespacedName
+		(?: \s* : \s* #{JSX_IDENTIFIER_PART} # JSXNamespacedName
 		| (?: \s* \. \s* #{JSX_IDENTIFIER_PART} )+ # JSXMemberExpression
 		)? )
 ///
@@ -1301,79 +1301,79 @@ JSX_FRAGMENT_IDENTIFIER = /// ^
 JSX_ATTRIBUTE = /// ^
 	(?!\d)
 	( #{JSX_IDENTIFIER_PART}
-		(?: \s* : \s* #{JSX_IDENTIFIER_PART}       # JSXNamespacedName
+		(?: \s* : \s* #{JSX_IDENTIFIER_PART} # JSXNamespacedName
 		)? )
-	( [^\S]* = (?!=) )?  # Is this an attribute with a value?
+	( [^\S]* = (?!=) )? # Is this an attribute with a value?
 ///
 
-NUMBER     = ///
-	^ 0b[01](?:_?[01])*n?                         | # binary
-	^ 0o[0-7](?:_?[0-7])*n?                       | # octal
-	^ 0x[\da-f](?:_?[\da-f])*n?                   | # hex
-	^ \d+(?:_\d+)*n                               | # decimal bigint
-	^ (?:\d+(?:_\d+)*)?      \.? \d+(?:_\d+)*       # decimal
+NUMBER = ///
+	^ 0b[01](?:_?[01])*n? | # binary
+	^ 0o[0-7](?:_?[0-7])*n? | # octal
+	^ 0x[\da-f](?:_?[\da-f])*n? | # hex
+	^ \d+(?:_\d+)*n | # decimal bigint
+	^ (?:\d+(?:_\d+)*)? \.? \d+(?:_\d+)* # decimal
 											(?:e[+-]? \d+(?:_\d+)* )?
 	# decimal without support for numeric literal separators for reference:
 	# \d*\.?\d+ (?:e[+-]?\d+)?
 ///i
 
-OPERATOR   = /// ^ (
-	?: [-=]>             # function
-		| [-+*/%<>&|^!?=]=  # compound assign / compare
-		| >>>=?             # zero-fill right shift
-		| ([-+:])\1         # doubles
-		| ([&|<>*/%])\2=?   # logic / shift / power / floor division / modulo
-		| \?(\.|::)         # soak access
-		| \.{2,3}           # range or splat
+OPERATOR = /// ^ (
+	?: [-=]> # function
+		| [-+*/%<>&|^!?=]= # compound assign / compare
+		| >>>=? # zero-fill right shift
+		| ([-+:])\1 # doubles
+		| ([&|<>*/%])\2=? # logic / shift / power / floor division / modulo
+		| \?(\.|::) # soak access
+		| \.{2,3} # range or splat
 ) ///
 
 WHITESPACE = /^[^\n\S]+/
 
-COMMENT    = /^(\s*)###([^#][\s\S]*?)(?:###([^\n\S]*)|###$)|^((?:\s*#(?!##[^#]).*)+)/
+COMMENT = /^(\s*)###([^#][\s\S]*?)(?:###([^\n\S]*)|###$)|^((?:\s*#(?!##[^#]).*)+)/
 
-CODE       = /^[-=]>/
+CODE = /^[-=]>/
 
 MULTI_DENT = /^(?:\n[^\n\S]*)+/
 
-JSTOKEN      = ///^ `(?!``) ((?: [^`\\] | \\[\s\S]           )*) `   ///
-HERE_JSTOKEN = ///^ ```     ((?: [^`\\] | \\[\s\S] | `(?!``) )*) ``` ///
+JSTOKEN = ///^ `(?!``) ((?: [^`\\] | \\[\s\S] )*) ` ///
+HERE_JSTOKEN = ///^ ``` ((?: [^`\\] | \\[\s\S] | `(?!``) )*) ``` ///
 
 # String-matching-regexes.
-STRING_START   = /^(?:'''|"""|'|")/
+STRING_START = /^(?:'''|"""|'|")/
 
-STRING_SINGLE  = /// ^(?: [^\\']  | \\[\s\S]                      )* ///
-STRING_DOUBLE  = /// ^(?: [^\\"#] | \\[\s\S] |           \#(?!\{) )* ///
-HEREDOC_SINGLE = /// ^(?: [^\\']  | \\[\s\S] | '(?!'')            )* ///
+STRING_SINGLE = /// ^(?: [^\\'] | \\[\s\S] )* ///
+STRING_DOUBLE = /// ^(?: [^\\"#] | \\[\s\S] | \#(?!\{) )* ///
+HEREDOC_SINGLE = /// ^(?: [^\\'] | \\[\s\S] | '(?!'') )* ///
 HEREDOC_DOUBLE = /// ^(?: [^\\"#] | \\[\s\S] | "(?!"") | \#(?!\{) )* ///
 
 INSIDE_JSX = /// ^(?:
 		[^
 			\{ # Start of CoffeeScript interpolation.
-			<  # Maybe JSX tag (`<` not allowed even if bare).
+			< # Maybe JSX tag (`<` not allowed even if bare).
 		]
 	)* /// # Similar to `HEREDOC_DOUBLE` but there is no escaping.
 JSX_INTERPOLATION = /// ^(?:
-			\{       # CoffeeScript interpolation.
-		| <(?!/)   # JSX opening tag.
+			\{ # CoffeeScript interpolation.
+		| <(?!/) # JSX opening tag.
 	)///
 
-HEREDOC_INDENT     = /\n+([^\n\S]*)(?=\S)/g
+HEREDOC_INDENT = /\n+([^\n\S]*)(?=\S)/g
 
 # Regex-matching-regexes.
 REGEX = /// ^
 	/ (?!/) ((
-	?: [^ [ / \n \\ ]  # Every other thing.
-		| \\[^\n]         # Anything but newlines escaped.
-		| \[              # Character class.
+	?: [^ [ / \n \\ ] # Every other thing.
+		| \\[^\n] # Anything but newlines escaped.
+		| \[ # Character class.
 				(?: \\[^\n] | [^ \] \n \\ ] )*
 			\]
 	)*) (/)?
 ///
 
-REGEX_FLAGS  = /^\w*/
-VALID_FLAGS  = /^(?!.*(.).*\1)[gimsuy]*$/
+REGEX_FLAGS = /^\w*/
+VALID_FLAGS = /^(?!.*(.).*\1)[gimsuy]*$/
 
-HEREGEX      = /// ^
+HEREGEX = /// ^
 	(?:
 			# Match any character, except those that need special handling below.
 			[^\\/#\s]
@@ -1392,33 +1392,33 @@ HEREGEX_COMMENT = /(\s+)(#(?!{).*)/gm
 
 REGEX_ILLEGAL = /// ^ ( / | /{3}\s*) (\*) ///
 
-POSSIBLY_DIVISION   = /// ^ /=?\s ///
+POSSIBLY_DIVISION = /// ^ /=?\s ///
 
 # Other regexes.
 HERECOMMENT_ILLEGAL = /\*\//
 
-LINE_CONTINUER      = /// ^ \s* (?: , | \??\.(?![.\d]) | \??:: ) ///
+LINE_CONTINUER = /// ^ \s* (?: , | \??\.(?![.\d]) | \??:: ) ///
 
 STRING_INVALID_ESCAPE = ///
-	( (?:^|[^\\]) (?:\\\\)* )        # Make sure the escape isn’t escaped.
+	( (?:^|[^\\]) (?:\\\\)* ) # Make sure the escape isn’t escaped.
 	\\ (
-			?: (0\d|[1-7])                # octal escape
+			?: (0\d|[1-7]) # octal escape
 			| (x(?![\da-fA-F]{2}).{0,2}) # hex escape
 			| (u\{(?![\da-fA-F]{1,}\})[^}]*\}?) # unicode code point escape
 			| (u(?!\{|[\da-fA-F]{4}).{0,4}) # unicode escape
 	)
 ///
 REGEX_INVALID_ESCAPE = ///
-	( (?:^|[^\\]) (?:\\\\)* )        # Make sure the escape isn’t escaped.
+	( (?:^|[^\\]) (?:\\\\)* ) # Make sure the escape isn’t escaped.
 	\\ (
-			?: (0\d)                      # octal escape
+			?: (0\d) # octal escape
 			| (x(?![\da-fA-F]{2}).{0,2}) # hex escape
 			| (u\{(?![\da-fA-F]{1,}\})[^}]*\}?) # unicode code point escape
 			| (u(?!\{|[\da-fA-F]{4}).{0,4}) # unicode escape
 	)
 ///
 
-TRAILING_SPACES     = /\s+$/
+TRAILING_SPACES = /\s+$/
 
 # Compound assignment tokens.
 COMPOUND_ASSIGN = [
@@ -1449,7 +1449,7 @@ BOOL = ['TRUE', 'FALSE']
 # Tokens which could legitimately be invoked or indexed. An opening
 # parentheses or bracket following these tokens will be recorded as the start
 # of a function invocation or indexing operation.
-CALLABLE  = ['IDENTIFIER', 'PROPERTY', ')', ']', '?', '@', 'THIS', 'SUPER', 'DYNAMIC_IMPORT']
+CALLABLE = ['IDENTIFIER', 'PROPERTY', ')', ']', '?', '@', 'THIS', 'SUPER', 'DYNAMIC_IMPORT']
 INDEXABLE = CALLABLE.concat [
 	'NUMBER', 'INFINITY', 'NAN', 'STRING', 'STRING_END', 'REGEX', 'REGEX_END'
 	'BOOL', 'NULL', 'UNDEFINED', '}', '::'

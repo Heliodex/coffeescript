@@ -45,11 +45,11 @@ replDefaults =
 			# Add assignment to `__` variable to force the input to be an expression.
 			ast = new Block [new Assign (new Value new Literal '__'), ast, '=']
 			# Wrap the expression in a closure to support top-level `await`.
-			ast     = new Code [], ast
+			ast = new Code [], ast
 			isAsync = ast.isAsync
 			# Invoke the wrapping closure.
-			ast    = new Root new Block [new Call ast]
-			js     = ast.compile {bare: yes, locals: Object.keys(context), referencedVars, sharedScope: yes}
+			ast = new Root new Block [new Call ast]
+			js = ast.compile {bare: yes, locals: Object.keys(context), referencedVars, sharedScope: yes}
 			if transpile
 				js = transpile.transpile(js, transpile.options).code
 				# Strip `"use strict"`, to avoid an exception on assigning to

@@ -3,13 +3,13 @@
 # contains the main entry functions for tokenizing, parsing, and compiling
 # source CoffeeScript into JavaScript.
 
-{Lexer}       = require './lexer'
-{parser}      = require './parser'
-helpers       = require './helpers'
-SourceMap     = require './sourcemap'
+{Lexer} = require './lexer'
+{parser} = require './parser'
+helpers = require './helpers'
+SourceMap = require './sourcemap'
 # Require `package.json`, which is two levels above this file, as this file is
 # evaluated from `lib/coffeescript`.
-packageJson   = require '../../package.json'
+packageJson = require '../../package.json'
 
 # The current CoffeeScript version number.
 exports.VERSION = packageJson.version

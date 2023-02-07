@@ -58,7 +58,7 @@ exports.flatten = flatten = (array) ->
 # Delete a key from an object, returning the value. Useful when a node is
 # looking for a particular method in an options hash.
 exports.del = (obj, key) ->
-	val =  obj[key]
+	val = obj[key]
 	delete obj[key]
 	val
 
@@ -75,12 +75,12 @@ exports.invertLiterate = (code) ->
 	blankLine = /^\s*$/
 	indented = /^[\t ]/
 	listItemStart = /// ^
-		(?:\t?|\ {0,3})   # Up to one tab, or up to three spaces, or neither;
+		(?:\t?|\ {0,3}) # Up to one tab, or up to three spaces, or neither;
 		(?:
-			[\*\-\+] |      # followed by `*`, `-` or `+`;
-			[0-9]{1,9}\.    # or by an integer up to 9 digits long, followed by a period;
+			[\*\-\+] | # followed by `*`, `-` or `+`;
+			[0-9]{1,9}\. # or by an integer up to 9 digits long, followed by a period;
 		)
-		[\ \t]            # followed by a space or a tab.
+		[\ \t] # followed by a space or a tab.
 	///
 	insideComment = no
 	for line in code.split('\n')
@@ -251,10 +251,10 @@ syntaxErrorToString = ->
 		filename = @filename or '[stdin]'
 
 	codeLine = @code.split('\n')[first_line]
-	start    = first_column
+	start = first_column
 	# Show only the first line on multi-line errors.
-	end      = if first_line is last_line then last_column + 1 else codeLine.length
-	marker   = codeLine[...start].replace(/[^\s]/g, ' ') + repeat('^', end - start)
+	end = if first_line is last_line then last_column + 1 else codeLine.length
+	marker = codeLine[...start].replace(/[^\s]/g, ' ') + repeat('^', end - start)
 
 	# Check to see if we're running on a color-enabled TTY.
 	if process?
@@ -263,7 +263,7 @@ syntaxErrorToString = ->
 	if @colorful ? colorsEnabled
 		colorize = (str) -> "\x1B[1;31m#{str}\x1B[0m"
 		codeLine = codeLine[...start] + colorize(codeLine[start...end]) + codeLine[end..]
-		marker   = colorize marker
+		marker = colorize marker
 
 	"""
 		#{filename}:#{first_line + 1}:#{first_column + 1}: error: #{@message}
@@ -325,7 +325,7 @@ exports.replaceUnicodeCodePointEscapes = (str, {flags, error, delimiter = ''} = 
 		unicodeCodePointToUnicodeEscapes codePointDecimal
 
 UNICODE_CODE_POINT_ESCAPE = ///
-	( \\\\ )        # Make sure the escape isn’t escaped.
+	( \\\\ ) # Make sure the escape isn’t escaped.
 	|
 	\\u\{ ( [\da-fA-F]+ ) \}
 ///g

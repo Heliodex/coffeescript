@@ -1,10 +1,10 @@
 # Node.js Implementation
-CoffeeScript  = require './coffeescript'
-fs            = require 'fs'
-vm            = require 'vm'
-path          = require 'path'
+CoffeeScript = require './coffeescript'
+fs = require 'fs'
+vm = require 'vm'
+path = require 'path'
 
-helpers       = CoffeeScript.helpers
+helpers = CoffeeScript.helpers
 
 CoffeeScript.transpile = (js, options) ->
 	try
@@ -81,12 +81,12 @@ CoffeeScript.eval = (code, options = {}) ->
 		else
 			sandbox = global
 		sandbox.__filename = options.filename || 'eval'
-		sandbox.__dirname  = path.dirname sandbox.__filename
+		sandbox.__dirname = path.dirname sandbox.__filename
 		# define module/require only if they chose not to specify their own
 		unless sandbox isnt global or sandbox.module or sandbox.require
 			Module = require 'module'
-			sandbox.module  = _module  = new Module(options.modulename || 'eval')
-			sandbox.require = _require = (path) ->  Module._load path, _module, true
+			sandbox.module = _module = new Module(options.modulename || 'eval')
+			sandbox.require = _require = (path) -> Module._load path, _module, true
 			_module.filename = sandbox.__filename
 			for r in Object.getOwnPropertyNames require when r not in ['paths', 'arguments', 'caller']
 				_require[r] = require[r]
