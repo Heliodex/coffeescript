@@ -17,17 +17,17 @@ A **LineMap** object keeps track of information about original line and column
 positions for a single line of output JavaScript code.
 **SourceMaps** are implemented in terms of **LineMaps**.
 
-    class LineMap
-      constructor: (@line) ->
-        @columns = []
+		class LineMap
+			constructor: (@line) ->
+				@columns = []
 
-      add: (column, [sourceLine, sourceColumn], options={}) ->
-        return if @columns[column] and options.noReplace
-        @columns[column] = {line: @line, column, sourceLine, sourceColumn}
+			add: (column, [sourceLine, sourceColumn], options={}) ->
+				return if @columns[column] and options.noReplace
+				@columns[column] = {line: @line, column, sourceLine, sourceColumn}
 
-      sourceLocation: (column) ->
-        column-- until (mapping = @columns[column]) or (column <= 0)
-        mapping and [mapping.sourceLine, mapping.sourceColumn]
+			sourceLocation: (column) ->
+				column-- until (mapping = @columns[column]) or (column <= 0)
+				mapping and [mapping.sourceLine, mapping.sourceColumn]
 
 
 SourceMap
@@ -40,26 +40,26 @@ This is intentionally agnostic towards how a source map might be represented on
 disk. Once the compiler is ready to produce a "v3"-style source map, we can walk
 through the arrays of line and column buffer to produce it.
 
-    class SourceMap
-      constructor: ->
-        @lines = []
+		class SourceMap
+			constructor: ->
+				@lines = []
 
 Adds a mapping to this SourceMap. `sourceLocation` and `generatedLocation`
 are both `[line, column]` arrays. If `options.noReplace` is true, then if there
 is already a mapping for the specified `line` and `column`, this will have no
 effect.
 
-      add: (sourceLocation, generatedLocation, options = {}) ->
-        [line, column] = generatedLocation
-        lineMap = (@lines[line] or= new LineMap(line))
-        lineMap.add column, sourceLocation, options
+			add: (sourceLocation, generatedLocation, options = {}) ->
+				[line, column] = generatedLocation
+				lineMap = (@lines[line] or= new LineMap(line))
+				lineMap.add column, sourceLocation, options
 
 Look up the original position of a given `line` and `column` in the generated
 code.
 
-      sourceLocation: ([line, column]) ->
-        line-- until (lineMap = @lines[line]) or (line <= 0)
-        lineMap and lineMap.sourceLocation column
+			sourceLocation: ([line, column]) ->
+				line-- until (lineMap = @lines[line]) or (line <= 0)
+				lineMap and lineMap.sourceLocation column
 
 Caching
 -------
@@ -68,14 +68,14 @@ A static source maps cache `filename`: `map`. These are used for transforming
 stack traces and are currently set in `CoffeeScript.compile` for all files
 compiled with the source maps option.
 
-      @sourceMaps: Object.create null
+			@sourceMaps: Object.create null
 
-      @registerCompiled: (filename, source, sourcemap) =>
-        if sourcemap?
-          @sourceMaps[filename] = sourcemap
+			@registerCompiled: (filename, source, sourcemap) =>
+				if sourcemap?
+					@sourceMaps[filename] = sourcemap
 
-      @getSourceMap: (filename) =>
-        @sourceMaps[filename]
+			@getSourceMap: (filename) =>
+				@sourceMaps[filename]
 
 
 V3 SourceMap Generation
@@ -86,27 +86,27 @@ Builds up a V3 source map, returning the generated JSON as a string.
 map.  Also, `options.sourceFiles` and `options.generatedFile` may be passed to
 set "sources" and "file", respectively.
 
-      generate: (options = {}, code = null) ->
-        writingline       = 0
-        lastColumn        = 0
-        lastSourceLine    = 0
-        lastSourceColumn  = 0
-        needComma         = no
-        buffer            = ""
+			generate: (options = {}, code = null) ->
+				writingline       = 0
+				lastColumn        = 0
+				lastSourceLine    = 0
+				lastSourceColumn  = 0
+				needComma         = no
+				buffer            = ""
 
-        for lineMap, lineNumber in @lines when lineMap
-          for mapping in lineMap.columns when mapping
-            while writingline < mapping.line
-              lastColumn = 0
-              needComma = no
-              buffer += ";"
-              writingline++
+				for lineMap, lineNumber in @lines when lineMap
+					for mapping in lineMap.columns when mapping
+						while writingline < mapping.line
+							lastColumn = 0
+							needComma = no
+							buffer += ";"
+							writingline++
 
 Write a comma if we've already written a segment on this line.
 
-            if needComma
-              buffer += ","
-              needComma = no
+						if needComma
+							buffer += ","
+							needComma = no
 
 Write the next segment. Segments can be 1, 4, or 5 values.  If just one, then it
 is a generated column which doesn't match anything in the source code.
@@ -114,44 +114,44 @@ is a generated column which doesn't match anything in the source code.
 The starting column in the generated source, relative to any previous recorded
 column for the current line:
 
-            buffer += @encodeVlq mapping.column - lastColumn
-            lastColumn = mapping.column
+						buffer += @encodeVlq mapping.column - lastColumn
+						lastColumn = mapping.column
 
 The index into the list of sources:
 
-            buffer += @encodeVlq 0
+						buffer += @encodeVlq 0
 
 The starting line in the original source, relative to the previous source line.
 
-            buffer += @encodeVlq mapping.sourceLine - lastSourceLine
-            lastSourceLine = mapping.sourceLine
+						buffer += @encodeVlq mapping.sourceLine - lastSourceLine
+						lastSourceLine = mapping.sourceLine
 
 The starting column in the original source, relative to the previous column.
 
-            buffer += @encodeVlq mapping.sourceColumn - lastSourceColumn
-            lastSourceColumn = mapping.sourceColumn
-            needComma = yes
+						buffer += @encodeVlq mapping.sourceColumn - lastSourceColumn
+						lastSourceColumn = mapping.sourceColumn
+						needComma = yes
 
 Produce the canonical JSON object format for a "v3" source map.
 
-        sources = if options.sourceFiles
-          options.sourceFiles
-        else if options.filename
-          [options.filename]
-        else
-          ['<anonymous>']
+				sources = if options.sourceFiles
+					options.sourceFiles
+				else if options.filename
+					[options.filename]
+				else
+					['<anonymous>']
 
-        v3 =
-          version:    3
-          file:       options.generatedFile or ''
-          sourceRoot: options.sourceRoot or ''
-          sources:    sources
-          names:      []
-          mappings:   buffer
+				v3 =
+					version:    3
+					file:       options.generatedFile or ''
+					sourceRoot: options.sourceRoot or ''
+					sources:    sources
+					names:      []
+					mappings:   buffer
 
-        v3.sourcesContent = [code] if options.sourceMap or options.inlineMap
+				v3.sourcesContent = [code] if options.sourceMap or options.inlineMap
 
-        v3
+				v3
 
 
 Base64 VLQ Encoding
@@ -163,38 +163,38 @@ encoded value (see [Wikipedia](https://en.wikipedia.org/wiki/File:Uintvar_coding
 SourceMap VLQ does things the other way around, with the least significat four
 bits of the original value encoded into the first byte of the VLQ encoded value.
 
-      VLQ_SHIFT            = 5
-      VLQ_CONTINUATION_BIT = 1 << VLQ_SHIFT             # 0010 0000
-      VLQ_VALUE_MASK       = VLQ_CONTINUATION_BIT - 1   # 0001 1111
+			VLQ_SHIFT            = 5
+			VLQ_CONTINUATION_BIT = 1 << VLQ_SHIFT             # 0010 0000
+			VLQ_VALUE_MASK       = VLQ_CONTINUATION_BIT - 1   # 0001 1111
 
-      encodeVlq: (value) ->
-        answer = ''
+			encodeVlq: (value) ->
+				answer = ''
 
-        # Least significant bit represents the sign.
-        signBit = if value < 0 then 1 else 0
+				# Least significant bit represents the sign.
+				signBit = if value < 0 then 1 else 0
 
-        # The next bits are the actual value.
-        valueToEncode = (Math.abs(value) << 1) + signBit
+				# The next bits are the actual value.
+				valueToEncode = (Math.abs(value) << 1) + signBit
 
-        # Make sure we encode at least one character, even if valueToEncode is 0.
-        while valueToEncode or not answer
-          nextChunk = valueToEncode & VLQ_VALUE_MASK
-          valueToEncode = valueToEncode >> VLQ_SHIFT
-          nextChunk |= VLQ_CONTINUATION_BIT if valueToEncode
-          answer += @encodeBase64 nextChunk
+				# Make sure we encode at least one character, even if valueToEncode is 0.
+				while valueToEncode or not answer
+					nextChunk = valueToEncode & VLQ_VALUE_MASK
+					valueToEncode = valueToEncode >> VLQ_SHIFT
+					nextChunk |= VLQ_CONTINUATION_BIT if valueToEncode
+					answer += @encodeBase64 nextChunk
 
-        answer
+				answer
 
 
 Regular Base64 Encoding
 -----------------------
 
-      BASE64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+			BASE64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
-      encodeBase64: (value) ->
-        BASE64_CHARS[value] or throw new Error "Cannot Base64 encode value: #{value}"
+			encodeBase64: (value) ->
+				BASE64_CHARS[value] or throw new Error "Cannot Base64 encode value: #{value}"
 
 
 Our API for source maps is just the `SourceMap` class.
 
-    module.exports = SourceMap
+		module.exports = SourceMap
