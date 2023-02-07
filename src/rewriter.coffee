@@ -289,8 +289,8 @@ exports.Rewriter = class Rewriter
 			# Added support for spread dots on the left side: f ...a
 			if (tag in IMPLICIT_FUNC and token.spaced or
 					tag is '?' and i > 0 and not tokens[i - 1].spaced) and
-				 (nextTag in IMPLICIT_CALL or
-				 (nextTag is '...' and @tag(i + 2) in IMPLICIT_CALL and not @findTagsBackwards(i, ['INDEX_START', '['])) or
+					(nextTag in IMPLICIT_CALL or
+					(nextTag is '...' and @tag(i + 2) in IMPLICIT_CALL and not @findTagsBackwards(i, ['INDEX_START', '['])) or
 					nextTag in IMPLICIT_UNSPACED_CALL and
 					not nextToken.spaced and not nextToken.newLine) and
 					not inControlFlow()
@@ -317,10 +317,10 @@ exports.Rewriter = class Rewriter
 			# Furthermore don’t allow this in the first line of a literal array
 			# or explicit object, as that creates grammatical ambiguities (#5368).
 			if tag in IMPLICIT_FUNC and
-				 @indexOfTag(i + 1, 'INDENT') > -1 and @looksObjectish(i + 2) and
-				 not @findTagsBackwards(i, ['CLASS', 'EXTENDS', 'IF', 'CATCH',
+					@indexOfTag(i + 1, 'INDENT') > -1 and @looksObjectish(i + 2) and
+					not @findTagsBackwards(i, ['CLASS', 'EXTENDS', 'IF', 'CATCH',
 					'SWITCH', 'LEADING_WHEN', 'FOR', 'WHILE', 'UNTIL']) and
-				 not ((s = stackTop()?[0]) in ['{', '['] and
+					not ((s = stackTop()?[0]) in ['{', '['] and
 							not isImplicit(stackTop()) and
 							@findTagsBackwards(i, s))
 				startImplicitCall i + 1
@@ -350,8 +350,8 @@ exports.Rewriter = class Rewriter
 							stackTag is 'INDENT' and stackNext?[0] is '{' and
 							not isImplicit(stackNext) and
 							@findTagsBackwards(stackIdx-1, ['{'])) and
-						 (startsLine or @tag(s - 1) is ',' or @tag(s - 1) is '{') and
-						 @tag(s - 1) not in UNFINISHED
+							(startsLine or @tag(s - 1) is ',' or @tag(s - 1) is '{') and
+							@tag(s - 1) not in UNFINISHED
 						return forward(1)
 
 				preObjectToken = if i > 1 then tokens[i - 2] else []
@@ -426,7 +426,7 @@ exports.Rewriter = class Rewriter
 			#     f a, b: c, d: e, f, g: h: i, j
 			#
 			if tag is ',' and not @looksObjectish(i + 1) and inImplicitObject() and not (@tag(i + 2) in ['FOROF', 'FORIN']) and
-				 (nextTag isnt 'TERMINATOR' or not @looksObjectish(i + 2))
+					(nextTag isnt 'TERMINATOR' or not @looksObjectish(i + 2))
 				# When nextTag is OUTDENT the comma is insignificant and
 				# should just be ignored so embed it in the implicit object.
 				#
@@ -525,7 +525,7 @@ exports.Rewriter = class Rewriter
 				j = token.comments.length - 1
 				until j is -1
 					if token.comments[j].newLine and not token.comments[j].unshift and
-						 not (token[0] is 'JS' and token.generated)
+							not (token[0] is 'JS' and token.generated)
 						dummyToken.comments.unshift token.comments[j]
 						token.comments.splice j, 1
 					j--
@@ -662,7 +662,7 @@ exports.Rewriter = class Rewriter
 			token[1] isnt ';' and token[0] in SINGLE_CLOSERS and
 			not (token[0] is 'TERMINATOR' and @tag(i + 1) in EXPRESSION_CLOSE) and
 			not (token[0] is 'ELSE' and
-					 (starter isnt 'THEN' or (leading_if_then or leading_switch_when))) and
+						(starter isnt 'THEN' or (leading_if_then or leading_switch_when))) and
 			not (token[0] in ['CATCH', 'FINALLY'] and starter in ['->', '=>']) or
 			token[0] in CALL_CLOSERS and
 			(@tokens[i - 1].newLine or @tokens[i - 1][0] is 'OUTDENT')
@@ -715,8 +715,8 @@ exports.Rewriter = class Rewriter
 				tokens.splice i + 1, 0, indent, outdent
 				return 1
 			if tag in SINGLE_LINERS and @tag(i + 1) isnt 'INDENT' and
-				 not (tag is 'ELSE' and @tag(i + 1) is 'IF') and
-				 not conditionTag
+					not (tag is 'ELSE' and @tag(i + 1) is 'IF') and
+					not conditionTag
 				starter = tag
 				[indent, outdent] = @indentation tokens[i]
 				indent.fromThen   = true if starter is 'THEN'
@@ -863,5 +863,5 @@ DISCARDED = ['(', ')', '[', ']', '{', '}', ':', '.', '..', '...', ',', '=', '++'
 
 # Tokens that, when appearing at the end of a line, suppress a following TERMINATOR/INDENT token
 exports.UNFINISHED = UNFINISHED = ['\\', '.', '?.', '?::', 'UNARY', 'DO', 'DO_IIFE', 'MATH', 'UNARY_MATH', '+', '-',
-					 '**', 'SHIFT', 'RELATION', 'COMPARE', '&', '^', '|', '&&', '||',
-					 'BIN?', 'EXTENDS']
+						'**', 'SHIFT', 'RELATION', 'COMPARE', '&', '^', '|', '&&', '||',
+						'BIN?', 'EXTENDS']

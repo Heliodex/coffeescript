@@ -333,8 +333,8 @@ test "tabs and spaces cannot be mixed for indentation", ->
   try
     CoffeeScript.compile '''
       new Layer
-      	 x: 0
-      	 y: 1
+      		x: 0
+      		y: 1
     '''
     ok no
   catch e

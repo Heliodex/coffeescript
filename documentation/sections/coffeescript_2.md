@@ -1,1 +1,0 @@
-## CoffeeScript 2

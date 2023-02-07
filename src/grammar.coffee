@@ -182,11 +182,11 @@ grammar =
 	Identifier: [
 		o 'IDENTIFIER',                             -> new IdentifierLiteral $1
 		o 'JSX_TAG',                                -> new JSXTag $1.toString(),
-																										 tagNameLocationData:                  $1.tagNameToken[2]
-																										 closingTagOpeningBracketLocationData: $1.closingTagOpeningBracketToken?[2]
-																										 closingTagSlashLocationData:          $1.closingTagSlashToken?[2]
-																										 closingTagNameLocationData:           $1.closingTagNameToken?[2]
-																										 closingTagClosingBracketLocationData: $1.closingTagClosingBracketToken?[2]
+																										tagNameLocationData:                  $1.tagNameToken[2]
+																										closingTagOpeningBracketLocationData: $1.closingTagOpeningBracketToken?[2]
+																										closingTagSlashLocationData:          $1.closingTagSlashToken?[2]
+																										closingTagNameLocationData:           $1.closingTagNameToken?[2]
+																										closingTagClosingBracketLocationData: $1.closingTagClosingBracketToken?[2]
 	]
 
 	Property: [
@@ -261,12 +261,12 @@ grammar =
 		o 'ObjAssignable : Expression',             -> new Assign LOC(1)(new Value $1), $3, 'object',
 																															operatorToken: LOC(2)(new Literal $2)
 		o 'ObjAssignable :
-			 INDENT Expression OUTDENT',              -> new Assign LOC(1)(new Value $1), $4, 'object',
+				INDENT Expression OUTDENT',              -> new Assign LOC(1)(new Value $1), $4, 'object',
 																															operatorToken: LOC(2)(new Literal $2)
 		o 'SimpleObjAssignable = Expression',       -> new Assign LOC(1)(new Value $1), $3, null,
 																															operatorToken: LOC(2)(new Literal $2)
 		o 'SimpleObjAssignable =
-			 INDENT Expression OUTDENT',              -> new Assign LOC(1)(new Value $1), $4, null,
+				INDENT Expression OUTDENT',              -> new Assign LOC(1)(new Value $1), $4, null,
 																															operatorToken: LOC(2)(new Literal $2)
 	]
 
@@ -926,11 +926,11 @@ grammar =
 		o 'Expression RELATION Expression',         -> new Op $2.toString(), $1, $3, undefined, invertOperator: $2.invert?.original ? $2.invert
 
 		o 'SimpleAssignable COMPOUND_ASSIGN
-			 Expression',                             -> new Assign $1, $3, $2.toString(), originalContext: $2.original
+				Expression',                             -> new Assign $1, $3, $2.toString(), originalContext: $2.original
 		o 'SimpleAssignable COMPOUND_ASSIGN
-			 INDENT Expression OUTDENT',              -> new Assign $1, $4, $2.toString(), originalContext: $2.original
+				INDENT Expression OUTDENT',              -> new Assign $1, $4, $2.toString(), originalContext: $2.original
 		o 'SimpleAssignable COMPOUND_ASSIGN TERMINATOR
-			 Expression',                             -> new Assign $1, $4, $2.toString(), originalContext: $2.original
+				Expression',                             -> new Assign $1, $4, $2.toString(), originalContext: $2.original
 	]
 
 	DoIife: [

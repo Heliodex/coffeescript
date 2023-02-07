@@ -68,16 +68,16 @@ exports.Lexer = class Lexer
 		i = 0
 		while @chunk = code[i..]
 			consumed = \
-					 @identifierToken() or
-					 @commentToken()    or
-					 @whitespaceToken() or
-					 @lineToken()       or
-					 @stringToken()     or
-					 @numberToken()     or
-					 @jsxToken()        or
-					 @regexToken()      or
-					 @jsToken()         or
-					 @literalToken()
+					@identifierToken() or
+					@commentToken()    or
+					@whitespaceToken() or
+					@lineToken()       or
+					@stringToken()     or
+					@numberToken()     or
+					@jsxToken()        or
+					@regexToken()      or
+					@jsToken()         or
+					@literalToken()
 
 			# Update position.
 			[@chunkLine, @chunkColumn, @chunkOffset] = @getLineAndColumnFromChunk consumed
@@ -172,15 +172,15 @@ exports.Lexer = class Lexer
 
 		tag =
 			if colon or prev? and
-				 (prev[0] in ['.', '?.', '::', '?::'] or
-				 not prev.spaced and prev[0] is '@')
+					(prev[0] in ['.', '?.', '::', '?::'] or
+					not prev.spaced and prev[0] is '@')
 				'PROPERTY'
 			else
 				'IDENTIFIER'
 
 		tokenData = {}
 		if tag is 'IDENTIFIER' and (id in JS_KEYWORDS or id in COFFEE_KEYWORDS) and
-			 not (@exportSpecifierList and id in COFFEE_KEYWORDS)
+				not (@exportSpecifierList and id in COFFEE_KEYWORDS)
 			tag = id.toUpperCase()
 			if tag is 'WHEN' and @tag() in LINE_BREAK
 				tag = 'LEADING_WHEN'
@@ -204,7 +204,7 @@ exports.Lexer = class Lexer
 						poppedToken = @tokens.pop()
 						tokenData.invert = poppedToken.data?.original ? poppedToken[1]
 		else if tag is 'IDENTIFIER' and @seenFor and id is 'from' and
-			 isForFrom(prev)
+				isForFrom(prev)
 			tag = 'FORFROM'
 			@seenFor = no
 		# Throw an error on attempts to use `get` or `set` as keywords, or
@@ -212,7 +212,7 @@ exports.Lexer = class Lexer
 		# `get` or `set`, i.e. `get({foo: function () {}})`.
 		else if tag is 'PROPERTY' and prev
 			if prev.spaced and prev[0] in CALLABLE and /^[gs]et$/.test(prev[1]) and
-				 @tokens.length > 1 and @tokens[@tokens.length - 2][0] not in ['.', '?.', '@']
+					@tokens.length > 1 and @tokens[@tokens.length - 2][0] not in ['.', '?.', '@']
 				@error "'#{prev[1]}' cannot be used as a keyword, or as a function call
 				without parentheses", prev[2]
 			else if prev[0] is '.' and @tokens.length > 1 and (prevprev = @tokens[@tokens.length - 2])[0] is 'UNARY' and prevprev[1] is 'new'
@@ -223,8 +223,8 @@ exports.Lexer = class Lexer
 			else if @tokens.length > 2
 				prevprev = @tokens[@tokens.length - 2]
 				if prev[0] in ['@', 'THIS'] and prevprev and prevprev.spaced and
-					 /^[gs]et$/.test(prevprev[1]) and
-					 @tokens[@tokens.length - 3][0] not in ['.', '?.', '@']
+						/^[gs]et$/.test(prevprev[1]) and
+						@tokens[@tokens.length - 3][0] not in ['.', '?.', '@']
 					@error "'#{prevprev[1]}' cannot be used as a keyword, or as a
 					function call without parentheses", prevprev[2]
 
@@ -241,7 +241,7 @@ exports.Lexer = class Lexer
 				when '==', '!='          then 'COMPARE'
 				when 'true', 'false'     then 'BOOL'
 				when 'break', 'continue', \
-						 'debugger'          then 'STATEMENT'
+							'debugger'          then 'STATEMENT'
 				when '&&', '||'          then id
 				else  tag
 
@@ -811,7 +811,7 @@ exports.Lexer = class Lexer
 				prev[0] = 'FUNC_EXIST' if prev[0] is '?'
 				tag = 'CALL_START'
 			else if value is '[' and ((prev[0] in INDEXABLE and not prev.spaced) or
-				 (prev[0] is '::')) # `.prototype` can’t be a method you can call.
+					(prev[0] is '::')) # `.prototype` can’t be a method you can call.
 				tag = 'INDEX_START'
 				switch prev[0]
 					when '?'  then prev[0] = 'INDEX_SOAK'
@@ -1312,19 +1312,19 @@ NUMBER     = ///
 	^ 0x[\da-f](?:_?[\da-f])*n?                   | # hex
 	^ \d+(?:_\d+)*n                               | # decimal bigint
 	^ (?:\d+(?:_\d+)*)?      \.? \d+(?:_\d+)*       # decimal
-										 (?:e[+-]? \d+(?:_\d+)* )?
+											(?:e[+-]? \d+(?:_\d+)* )?
 	# decimal without support for numeric literal separators for reference:
 	# \d*\.?\d+ (?:e[+-]?\d+)?
 ///i
 
 OPERATOR   = /// ^ (
 	?: [-=]>             # function
-	 | [-+*/%<>&|^!?=]=  # compound assign / compare
-	 | >>>=?             # zero-fill right shift
-	 | ([-+:])\1         # doubles
-	 | ([&|<>*/%])\2=?   # logic / shift / power / floor division / modulo
-	 | \?(\.|::)         # soak access
-	 | \.{2,3}           # range or splat
+		| [-+*/%<>&|^!?=]=  # compound assign / compare
+		| >>>=?             # zero-fill right shift
+		| ([-+:])\1         # doubles
+		| ([&|<>*/%])\2=?   # logic / shift / power / floor division / modulo
+		| \?(\.|::)         # soak access
+		| \.{2,3}           # range or splat
 ) ///
 
 WHITESPACE = /^[^\n\S]+/
@@ -1363,10 +1363,10 @@ HEREDOC_INDENT     = /\n+([^\n\S]*)(?=\S)/g
 REGEX = /// ^
 	/ (?!/) ((
 	?: [^ [ / \n \\ ]  # Every other thing.
-	 | \\[^\n]         # Anything but newlines escaped.
-	 | \[              # Character class.
-			 (?: \\[^\n] | [^ \] \n \\ ] )*
-		 \]
+		| \\[^\n]         # Anything but newlines escaped.
+		| \[              # Character class.
+				(?: \\[^\n] | [^ \] \n \\ ] )*
+			\]
 	)*) (/)?
 ///
 
@@ -1402,7 +1402,7 @@ LINE_CONTINUER      = /// ^ \s* (?: , | \??\.(?![.\d]) | \??:: ) ///
 STRING_INVALID_ESCAPE = ///
 	( (?:^|[^\\]) (?:\\\\)* )        # Make sure the escape isn’t escaped.
 	\\ (
-		 ?: (0\d|[1-7])                # octal escape
+			?: (0\d|[1-7])                # octal escape
 			| (x(?![\da-fA-F]{2}).{0,2}) # hex escape
 			| (u\{(?![\da-fA-F]{1,}\})[^}]*\}?) # unicode code point escape
 			| (u(?!\{|[\da-fA-F]{4}).{0,4}) # unicode escape
@@ -1411,7 +1411,7 @@ STRING_INVALID_ESCAPE = ///
 REGEX_INVALID_ESCAPE = ///
 	( (?:^|[^\\]) (?:\\\\)* )        # Make sure the escape isn’t escaped.
 	\\ (
-		 ?: (0\d)                      # octal escape
+			?: (0\d)                      # octal escape
 			| (x(?![\da-fA-F]{2}).{0,2}) # hex escape
 			| (u\{(?![\da-fA-F]{1,}\})[^}]*\}?) # unicode code point escape
 			| (u(?!\{|[\da-fA-F]{4}).{0,4}) # unicode escape
